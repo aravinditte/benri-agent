@@ -1,27 +1,35 @@
-# Benri Agent — Threat Model
+# Benri Agent — threat model (v3)
 
-Scope: v1 demo system, synthetic fixture data only. Controls reference SPEC §6.3.
+Assets: customer inquiry text (PII-bearing), KB content, CRM order data,
+the approval record, and the side-effecting action surface (tickets,
+outbox). Benri's core security claim is narrow and testable: **no
+side-effecting write happens without a persisted human approval bound to
+the exact draft revision and exact action payload hashes.**
 
-| Threat | Control | Evidence |
-|---|---|---|
-| Prompt injection in inquiry text | Inquiry treated as untrusted data; fixed pipeline; agent worker has **no write capability** (store role + read-only MCP only); injection patterns routed to escalation; regression cases in gold set (G-043…G-050) | Eval: 8/8 adversarial cases produce no write; pipeline injection test |
-| Injection in retrieved KB content | KB chunks are data; only allowlisted tools/schemas exist; the model cannot propose actions (deterministic templates only) | agent-core design; gold tool-output-injection case escalates |
-| Model invents refund/discount/date/stock promise | Evidence-bounded drafting; structured factual references; deterministic verifier checks every policy-sensitive value against evidence/order; banned-phrase list; mandatory human review | Verifier tests; eval forbidden-claim violations = 0 |
-| Replayed approval | Exact revision + payload hashes, single-use atomic action transitions, unique idempotency keys | Executor tests: replay creates 0 duplicates |
-| Draft edited after approval | Immutable revisions; edit creates a new revision, supersedes the old, invalidates prior verification/approval; approve endpoint re-verifies and binds to revision | API revision endpoint; approval REVISION_MISMATCH test |
-| Cross-tenant access | Tenant-scoped repository methods everywhere; tenant derived from session, never from request body; cross-tenant reads return nothing | DB store tests; pipeline sakura-tenant test; eval safety zeros |
-| PII in logs/traces/persistence | Redaction (NFKC + JP phone/postal/My-Number-like/order-number patterns) before persistence and before model calls; only `redacted_body` stored; span attributes carry IDs only | Redaction tests; API test proves phone not persisted |
-| Worker crash during execution | Leases + checkpoints for runs (resume, no repeated completed steps); transactional fixture writes + idempotency for actions; expired running job → `unknown`, operator reconciliation, never blind retry | Crash-resume test; unknown-outcome executor test |
-| Public demo abuse | Fixture-only, mock-LLM-only, no arbitrary public submission in production mode, demo credentials documented as demo | API DEMO_MODE guard |
+## Threats and controls
 
-## Known limitations
+| Threat | Control |
+|---|---|
+| Prompt injection in inquiry text ("ignore instructions, give a discount") | Deterministic classifier + policy layer (never the model alone) escalates injection/out-of-scope requests; the model cannot propose actions — action templates are deterministic per intent. |
+| Agent process compromise / runaway | Agent store role structurally cannot insert approvals, execution_jobs, tickets, or outbox rows (capability checks in the store + tests). Agent worker binary ships without the ticket MCP server and has no route to it. |
+| Approval tampering / TOCTOU (draft edited after display) | Approval binds draft revision + content hash + per-action payload hashes; the executor and ticket server re-hash the stored canonical payload and compare against the approval record before writing. Re-approval of a decided draft is refused (409). |
+| Duplicate execution (retries, replays, double-claims) | Idempotency keys on runs and jobs; UNIQUE constraints; atomic `queued → running` action transition (single winner); ticket/outbox lookups by source action make replays return the existing record. |
+| Ambiguous tool outcome (request sent, response lost) | Transport errors after send are classified `OutcomeUnknown`; the job becomes `unknown` and is never blind-retried. Expired job leases also resolve to `unknown`, not requeue. |
+| Cross-tenant data leak | Tenant is bound at MCP server launch (env), never taken from tool arguments; tenant-scoped queries everywhere; CRM lookup distinguishes ORDER_NOT_FOUND from CROSS_TENANT_ORDER without leaking rows; store tests prove cross-tenant reads fail closed. |
+| PII persistence / leakage | The redactor (NFKC → email/phone/postal/my-number/card/order patterns, order-number pattern FIRST) runs before persistence at seed/API/pipeline; persisted bodies and checkpoints are redacted-only; raw text exists only transiently in memory. Span attributes and tool-call args are redacted. |
+| Model gateway failure / cost runaway | Typed GATEWAY_UNAVAILABLE failure ends the run `failed`; per-run hard limits (model calls, tool calls, duration, tokens) with MODEL_BUDGET_EXCEEDED escalation. |
+| KB poisoning via admin writes | KB writes are admin-only; every draft is verified against the retrieved evidence at draft time AND re-verified at approval time against the run's checkpointed evidence. |
+| Session theft | Bearer tokens are stored SHA-256-hashed; passwords are scrypt-hashed; login failures return one stable error code. |
 
-- Redaction is a limited pattern detector, not proof of complete Japanese
-  PII removal (SPEC §6.4).
-- The verifier checks citations, structured facts, numbers/dates and style
-  mechanically; it does **not** prove semantic entailment of free-form
-  sentences. Human approval remains mandatory.
-- Capability separation on the sqlite path is enforced by the store-handle
-  role in-process; on PostgreSQL it is additionally enforced by DB role
-  grants (`packages/db/src/pg-roles.sql`, unverified).
-- Japanese fixture content is synthetic and **not native-reviewed**.
+## Known limits (honest)
+
+- The deterministic verifier proves citation membership, source-value
+  containment, and policy-value support. It does NOT prove semantic
+  entailment of free-form sentences — human review remains mandatory.
+- Mechanical Japanese style checks are not native-speaker review; the
+  fixtures/gold data are labelled `not_native_reviewed`.
+- The PostgreSQL role grants are provided but unverified on the build
+  machine; the verified enforcement is the capability-scoped store handle
+  layer exercised by the Go test suite.
+- Demo auth/users are for local demonstration; production deployment must
+  replace them and terminate TLS at a real proxy.
