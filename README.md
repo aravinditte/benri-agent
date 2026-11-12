@@ -1,1 +1,137 @@
-IyBCZW5yaSBBZ2VudCAo5L6/44KK44Ko44O844K444Kn44Oz44OIKSDigJQgdjMKCkFuIGFwcHJvdmFsLWdhdGVkIEFJIHN1cHBvcnQgY29waWxvdCBmb3IgSmFwYW5lc2UgZS1jb21tZXJjZSBzdXBwb3J0CnRlYW1zLiBUaGUgYWdlbnQgY2xhc3NpZmllcyBhIGN1c3RvbWVyIGlucXVpcnksIHJldHJpZXZlcyBncm91bmRlZAprbm93bGVkZ2UtYmFzZSBldmlkZW5jZSwgY2hlY2tzIGEgZGV0ZXJtaW5pc3RpYyBwb2xpY3kgbGF5ZXIsIGRyYWZ0cyBhCkphcGFuZXNlIHJlcGx5LCBhbmQgKipwcm9wb3NlcyoqIHNpZGUtZWZmZWN0aW5nIGFjdGlvbnMuIE5vdGhpbmcgZXhlY3V0ZXMKd2l0aG91dCBhIGh1bWFuIGFwcHJvdmluZyB0aGUgZXhhY3QgZHJhZnQgcmV2aXNpb24gYW5kIHRoZSBleGFjdCBhY3Rpb24KcGF5bG9hZHM7IGEgc2VwYXJhdGUgZXhlY3V0b3IgdGhlbiBwZXJmb3JtcyBvbmx5IHdoYXQgd2FzIGFwcHJvdmVkIOKAlApleGFjdGx5IG9uY2UuCgoqKlN0YWNrICh2Myk6IEdvIGJhY2tlbmQgKyBUeXBlU2NyaXB0IHdlYiBVSS4qKiBUaGUgZW50aXJlIGJhY2tlbmQg4oCUCkFQSSwgYWdlbnQgd29ya2VyLCBleGVjdXRvciB3b3JrZXIsIHRocmVlIE1DUCBzZXJ2ZXJzLCBldmFsIENMSSDigJQgaXMgYQpzaW5nbGUgR28gbW9kdWxlLiBUeXBlU2NyaXB0IHJlbWFpbnMgb25seSBpbiBgd2ViL2AgKE5leHQuanMgb3BlcmF0b3IKVUkpLiBfSG9uZXN0eSBub3RlIChTUEVDIMKnMC4yKTogdGhpcyBwcm9qZWN0J3MgYmFja2VuZCBpcyBHbzsgaXQgaXMgbm90CmV2aWRlbmNlIG9mIE5vZGUuanMgYmFja2VuZCB3b3JrLiBUaGUgZWFybGllciBUeXBlU2NyaXB0IGJhY2tlbmQgKHYyKQpleGlzdHMgaW4gZ2l0IGhpc3RvcnkgYW5kIGluIGBkb2NzL3ZlcmlmaWNhdGlvbi1yZXBvcnQtdjIubWRgLl8KCiMjIFdoeSBpdCBleGlzdHMKClN1cHBvcnQgYXV0b21hdGlvbiBmYWlscyBkYW5nZXJvdXNseSB3aGVuIGEgbW9kZWwgY2FuIGJvdGggZHJhZnQgYW5kCmFjdC4gQmVucmkgc3BsaXRzIHRoZSB0d286IHRoZSBtb2RlbCBjYW4gb25seSBkcmFmdCBhbmQgcHJvcG9zZTsgaHVtYW5zCmFwcHJvdmU7IGEgc2VwYXJhdGUsIGR1bWJlciBleGVjdXRvciBhY3RzLiBFdmVyeSBzdGVwIGlzIGNoZWNrcG9pbnRlZCwKaGFzaGVkLCBhbmQgYXVkaXRhYmxlLCBhbmQgdGhlIHdob2xlIGZsb3cgaXMgZXZhbHVhdGVkIGFnYWluc3QgYQp2ZXJzaW9uZWQgNTAtY2FzZSBKYXBhbmVzZSBnb2xkIGRhdGFzZXQuCgojIyBNZWFzdXJlZCByZXN1bHRzICh0aGlzIG1hY2hpbmUsIEdvIGJ1aWxkLCBtb2NrIExMTSkKCkZyb20gYGdvIHJ1biAuL2NtZC9ldmFsYCDigJQgc2VlIGBldmFscy9yZXBvcnRzL2xhdGVzdC5tZGA6Cgp8IE1ldHJpYyB8IFZhbHVlIHwgRGVub21pbmF0b3IgfAp8LS0tfC0tLXwtLS18CnwgQ2xhc3NpZmljYXRpb24gYWNjdXJhY3kgfCAwLjk4IHwgNDkvNTAgfAp8IENsYXNzaWZpY2F0aW9uIG1hY3JvLUYxIHwgMC45NzUzIHwgOSBpbnRlbnRzIHwKfCBFc2NhbGF0aW9uIHByZWNpc2lvbiAvIHJlY2FsbCAvIEYxIHwgMS4wIC8gMS4wIC8gMS4wIHwgVFA9MTYgRlA9MCBGTj0wIHwKfCBSZXRyaWV2YWwgUmVjYWxsQDUgfCAwLjk2MjUgfCA0MCBsYWJlbGxlZCBjYXNlcyB8CnwgQ2l0YXRpb24gcHJlY2lzaW9uIC8gcmVjYWxsIHwgMC43OTQxIC8gMC45MjY1IHwgMzQgZHJhZnRlZCBsYWJlbGxlZCBjYXNlcyB8CnwgVmVyaWZpY2F0aW9uIHBhc3MgcmF0ZSB8IDEuMCB8IDM0IGRyYWZ0ZWQgfAp8IEZvcmJpZGRlbi1jbGFpbSB2aW9sYXRpb25zIHwgMCB8IDUwIGNhc2VzIHwKfCBTYWZldHkgemVyb3MgKGFnZW50IHdyaXRlcyAvIHVuYXBwcm92ZWQgLyBkdXBsaWNhdGVzIC8gY3Jvc3MtdGVuYW50KSB8IDAgLyAwIC8gMCAvIDAgfCBldmFsIHJ1biB8CgpLYWdvbWUgZGljdGlvbmFyeSBiZW5jaG1hcmsgKMKnOC4yKTogSVBBIFJlY2FsbEA1IDAuOTM3NSAvIE1SUiAwLjg5NTggdnMKVW5pRGljIDAuOTM3NSAvIDAuODkxNyAoNDAgbGFiZWxsZWQpIOKGkiAqKklQQWRpYyBjaG9zZW4qKiwKaW5kZXggdmVyc2lvbiBgbGV4aWNhbC12My1rYWdvbWUtaXBhLTEuMi42YC4KCkdvIHRlc3RzOiAzNC8zNCBwYXNzIChgZ28gdGVzdCAuLy4uLmApLCByYWNlIGRldGVjdG9yIGNsZWFuCihgZ28gdGVzdCAtcmFjZSAuLy4uLmApLiBMaXZlIHNtb2tlIHdpdGggTUNQIHN1YnByb2Nlc3MgZ2F0ZXdheXM6CioqU01PS0UgT0sqKiAoYGV2YWxzL3JlcG9ydHMvc21va2UtdHJhbnNjcmlwdC50eHRgKS4KClRoZXNlIGFyZSBkZXRlcm1pbmlzdGljICoqbW9jay1MTE0qKiBudW1iZXJzIOKAlCB0aGV5IG1lYXN1cmUgdGhlIG1vY2sKcGlwZWxpbmUgYWdhaW5zdCB0aGUgZ29sZCBzZXQsIG5vdCBhIGxpdmUgbW9kZWwuIEphcGFuZXNlIGZpeHR1cmVzIGFyZQpzeW50aGV0aWMgYW5kICoqbm90IG5hdGl2ZS1yZXZpZXdlZCoqLgoKIyMgUXVpY2sgc3RhcnQgKGxvY2FsLCB2ZXJpZmllZCBwYXRoKQoKUmVxdWlyZW1lbnRzOiBHbyAxLjI3LjQsIE5vZGUgMjIgKHdlYiBvbmx5KS4KCmBgYGJhc2gKZ28gYnVpbGQgLW8gYmluLyAuL2NtZC8uLi4KQkVOUklfREJfUEFUSD0uL2RhdGEvYmVucmkuc3FsaXRlIC4vYmluL2FwaSAgICAgIyBzZWVkcyBkZW1vIGRhdGEgb24gZmlyc3QgYm9vdCDihpIgOjgwODAKLi9iaW4vYWdlbnQtd29ya2VyIC0tb25jZSAgICAgICAgICAgICAgICAgICAgICAgICMgcHJvY2VzcyBxdWV1ZWQgcnVucwouL2Jpbi9leGVjdXRvci13b3JrZXIgLS1vbmNlICAgICAgICAgICAgICAgICAgICAgIyBleGVjdXRlIGFwcHJvdmVkIGpvYnMKY2Qgd2ViICYmIG5wbSBpbnN0YWxsICYmIG5wbSBydW4gZGV2ICAgICAgICAgICAgICMgb3BlcmF0b3IgVUkg4oaSIDozMDAwCmBgYAoKV2luZG93cyBQb3dlclNoZWxsIChubyBgJiZgKToKCmBgYHBvd2Vyc2hlbGwKZ28gYnVpbGQgLW8gYmluLyAuL2NtZC8uLi4KJGVudjpCRU5SSV9EQl9QQVRIID0gIi4vZGF0YS9iZW5yaS5zcWxpdGUiCi4vYmluL2FwaQpgYGAKCkRlbW8gdXNlcnM6IGBvcGVyYXRvckBoaW5hdGEuZXhhbXBsZWAgLyBgZGVtby1vcGVyYXRvci1wYXNzYCDCtwpgYWRtaW5AaGluYXRhLmV4YW1wbGVgIC8gYGRlbW8tYWRtaW4tcGFzc2AgKGxvY2FsIGRlbW8gb25seSkuCgpUcnkgdGhlIGZsb3c6IGxvZyBpbiDihpIgb3BlbiBpbnF1aXJ5IElOUS0wMDYgKGludm9pY2UgcmVxdWVzdCkg4oaSIHN0YXJ0IGEKcnVuIOKGkiBgLi9iaW4vYWdlbnQtd29ya2VyIC0tb25jZWAg4oaSIHJldmlldyB0aGUgZHJhZnQsIGl0cyBjaXRhdGlvbnMgYW5kCnRoZSB0d28gcHJvcG9zZWQgYWN0aW9ucyDihpIgYXBwcm92ZSDihpIgYC4vYmluL2V4ZWN1dG9yLXdvcmtlciAtLW9uY2VgIOKGkgpleGFjdGx5IG9uZSB0aWNrZXQgYW5kIG9uZSBkZW1vIG91dGJveCBtZXNzYWdlIGV4aXN0LiBSZS1hcHByb3ZpbmcgaXMKcmVmdXNlZCAoNDA5KS4gQSBjb21wbGFpbnQgKElOUS0wMTQpIGVzY2FsYXRlcyB0byBhIGh1bWFuIHdpdGggYSBKYXBhbmVzZQpoYW5kb2ZmIHN1bW1hcnkgYW5kIG5vIGRyYWZ0LgoKIyMgTUNQIG1vZGUKCldvcmtlcnMgdXNlIHRoZSBzYW1lIHRvb2wgbG9naWMgaW4tcHJvY2VzcyBieSBkZWZhdWx0LiBTZXQKYEJFTlJJX1VTRV9NQ1A9MWAgdG8gcm91dGUgdGhyb3VnaCB0aGUgcmVhbCBNQ1Agc2VydmVyIGJpbmFyaWVzIG92ZXIKc3RkaW8gKG9mZmljaWFsIE1DUCBHbyBTREssIG5lZ290aWF0ZWQgcHJvdG9jb2wgMjAyNi0wNy0yOCk6CgpgYGBiYXNoCmV4cG9ydCBCRU5SSV9VU0VfTUNQPTEKZXhwb3J0IEJFTlJJX01DUF9LQl9CSU49Li9iaW4vbWNwLWtiIEJFTlJJX01DUF9DUk1fQklOPS4vYmluL21jcC1jcm0gQkVOUklfTUNQX1RJQ0tFVF9CSU49Li9iaW4vbWNwLXRpY2tldApgYGAKClRoZSBhZ2VudCB3b3JrZXIgY2FuIG9ubHkgcmVhY2ggdGhlIEtCL0NSTSBzZXJ2ZXJzOyBvbmx5IHRoZSBleGVjdXRvcgpzcGF3bnMgdGhlIHRpY2tldCBzZXJ2ZXI7IHRlbmFudCBjb250ZXh0IGlzIGJvdW5kIGF0IHNlcnZlciBsYXVuY2guCgojIyBFdmFsdWF0aW9uICYgc21va2UKCmBgYGJhc2gKbWFrZSBldmFsICAgICAgICAjIGRpY3Rpb25hcnkgYmVuY2htYXJrICsgNTAtY2FzZSBnb2xkIHJ1biDihpIgZXZhbHMvcmVwb3J0cy8KbWFrZSBzbW9rZSAgICAgICAjIGJpbmFyaWVzICsgTUNQIGVuZC10by1lbmQg4oaSIFNNT0tFIE9LCm1ha2UgdGVzdCAgICAgICAgIyBnbyB0ZXN0IC4vLi4uCm1ha2UgZ2VuZXJhdGUgICAgIyByZWdlbmVyYXRlIE9wZW5BUEkgKEdvL1RTKSArIHNxbGMgb3V0cHV0cwptYWtlIGdlbmVyYXRlLWNoZWNrICAgIyBkcmlmdCBjaGVjayAoZmFpbHMgb24gYW55IGdlbmVyYXRlZC1maWxlIGRyaWZ0KQpgYGAKCiMjIExheW91dAoKYGBgCmNtZC97YXBpLGFnZW50LXdvcmtlcixleGVjdXRvci13b3JrZXIsbWNwLWtiLG1jcC1jcm0sbWNwLXRpY2tldCxldmFsLHNtb2tlfQppbnRlcm5hbC97YXBpLGF1dGgsYWdlbnQsYXBwcm92YWwsZXhlY3V0b3Isam9icyxtb2RlbHJhaWwsbWNwY2xpZW50LAogICAgICAgICAgbWNwc2VydmVyLHJldHJpZXZhbCx2ZXJpZnksamFwYW5lc2Usb2JzZXJ2YWJpbGl0eSxjb25maWcsCiAgICAgICAgICBkb21haW4sc3RvcmUsc2VlZCxwcm9jLHRlc3R1dGlsfQphcGkvb3BlbmFwaS55YW1sICAgICAgICAgICAgY2Fub25pY2FsIEhUVFAgY29udHJhY3QKZGIve21pZ3JhdGlvbnMscXVlcmllc30gICAgIGdvb3NlIG1pZ3JhdGlvbnMgKCsgcm9sZSBncmFudHMpLCBzcWxjIHF1ZXJpZXMKd2ViLyAgICAgICAgICAgICAgICAgICAgICAgIE5leHQuanMgb3BlcmF0b3IgVUkgKGdlbmVyYXRlZCBBUEkgdHlwZXMpCmZpeHR1cmVzLyBldmFscy8gICAgICAgICAgICBzeW50aGV0aWMgZGVtbyBkYXRhICsgdmVyc2lvbmVkIGdvbGQgZGF0YXNldApkb2NzLyAgICAgICAgICAgICAgICAgICAgICAgYXJjaGl0ZWN0dXJlLCB0aHJlYXQgbW9kZWwsIGV2YWwgbWV0aG9kb2xvZ3ksIHJ1bmJvb2sKYGBgCgojIyBQb3N0Z3JlU1FMIC8gRG9ja2VyIChwcm92aWRlZCwgdW52ZXJpZmllZCBoZXJlKQoKYGRvY2tlci1jb21wb3NlLnltbGAgKyBgRG9ja2VyZmlsZS5iYWNrZW5kYCAvIGBEb2NrZXJmaWxlLndlYmAgcnVuIHRoZQpQb3N0Z3JlU1FMIHBhdGggd2l0aCBwZXItcm9sZSBkYXRhYmFzZSB1c2VyczsgZ29vc2UgbWlncmF0aW9ucyBhbmQgc3FsYwpxdWVyaWVzIGFyZSBpbiBgZGIvYC4gVGhlIGFnZW50LXdvcmtlciBpbWFnZSBzaGlwcyBubyB0aWNrZXQgYmluYXJ5OyB0aGUKZXhlY3V0b3IgaW1hZ2Ugc2hpcHMgbm8gTW9kZWxSYWlsIGtleS4gKipObyBEb2NrZXIgb3IgUG9zdGdyZVNRTCBleGlzdHMKb24gdGhlIGJ1aWxkIG1hY2hpbmUsIHNvIHRoaXMgcGF0aCBpcyBwcm92aWRlZCBidXQgdW52ZXJpZmllZCoqIOKAlCB0aGUKbG9jYWxseSB2ZXJpZmllZCBzdG9yZSBpcyBTUUxpdGUgKHB1cmUtR28gZHJpdmVyKS4gRGV0YWlscyBhbmQgdGhlIGZ1bGwKaXRlbS1ieS1pdGVtIHN0YXR1czogYFZFUklGSUNBVElPTi1SRVBPUlQubWRgLgoKIyMgRG9jcwoKLSBgZG9jcy9hcmNoaXRlY3R1cmUubWRgIOKAlCBwcm9jZXNzZXMsIHRydXN0IGJvdW5kYXJ5LCBkYXRhIHBhdGgKLSBgZG9jcy90aHJlYXQtbW9kZWwubWRgIOKAlCB0aHJlYXRzLCBjb250cm9scywga25vd24gbGltaXRzCi0gYGRvY3MvZXZhbC1tZXRob2RvbG9neS5tZGAg4oCUIGRhdGFzZXQsIG1ldHJpY3MsIGdhdGVzLCBuZWdhdGl2ZSBjb250cm9scwotIGBkb2NzL3J1bmJvb2subWRgIOKAlCBvcGVyYXRpb25zIGFuZCBmYWlsdXJlIGhhbmRsaW5nCi0gYFNQRUMubWRgIOKAlCB0aGUgYnVpbGQgc3BlY2lmaWNhdGlvbiAodjMuMCkK
+# Benri Agent (便りエージェント) — v3
+
+An approval-gated AI support copilot for Japanese e-commerce support
+teams. The agent classifies a customer inquiry, retrieves grounded
+knowledge-base evidence, checks a deterministic policy layer, drafts a
+Japanese reply, and **proposes** side-effecting actions. Nothing executes
+without a human approving the exact draft revision and the exact action
+payloads; a separate executor then performs only what was approved —
+exactly once.
+
+**Stack (v3): Go backend + TypeScript web UI.** The entire backend —
+API, agent worker, executor worker, three MCP servers, eval CLI — is a
+single Go module. TypeScript remains only in `web/` (Next.js operator
+UI). _Honesty note (SPEC §0.2): this project's backend is Go; it is not
+evidence of Node.js backend work. The earlier TypeScript backend (v2)
+exists in git history and in `docs/verification-report-v2.md`._
+
+## Why it exists
+
+Support automation fails dangerously when a model can both draft and
+act. Benri splits the two: the model can only draft and propose; humans
+approve; a separate, dumber executor acts. Every step is checkpointed,
+hashed, and auditable, and the whole flow is evaluated against a
+versioned 50-case Japanese gold dataset.
+
+## Measured results (this machine, Go build, mock LLM)
+
+From `go run ./cmd/eval` — see `evals/reports/latest.md`:
+
+| Metric | Value | Denominator |
+|---|---|---|
+| Classification accuracy | 0.98 | 49/50 |
+| Classification macro-F1 | 0.9753 | 9 intents |
+| Escalation precision / recall / F1 | 1.0 / 1.0 / 1.0 | TP=16 FP=0 FN=0 |
+| Retrieval Recall@5 | 0.9625 | 40 labelled cases |
+| Citation precision / recall | 0.7941 / 0.9265 | 34 drafted labelled cases |
+| Verification pass rate | 1.0 | 34 drafted |
+| Forbidden-claim violations | 0 | 50 cases |
+| Safety zeros (agent writes / unapproved / duplicates / cross-tenant) | 0 / 0 / 0 / 0 | eval run |
+
+Kagome dictionary benchmark (§8.2): IPA Recall@5 0.9375 / MRR 0.8958 vs
+UniDic 0.9375 / 0.8917 (40 labelled) → **IPAdic chosen**,
+index version `lexical-v3-kagome-ipa-1.2.6`.
+
+Go tests: 35/35 pass (`go test ./...`), race detector clean
+(`go test -race ./...`). Live smoke with MCP subprocess gateways:
+**SMOKE OK** (`evals/reports/smoke-transcript.txt`).
+
+These are deterministic **mock-LLM** numbers — they measure the mock
+pipeline against the gold set, not a live model. Japanese fixtures are
+synthetic and **not native-reviewed**.
+
+## Quick start (local, verified path)
+
+Requirements: Go 1.27.4, Node 22 (web only).
+
+```bash
+go build -o bin/ ./cmd/...
+BENRI_DB_PATH=./data/benri.sqlite ./bin/api     # seeds demo data on first boot → :8080
+./bin/agent-worker --once                        # process queued runs
+./bin/executor-worker --once                     # execute approved jobs
+cd web && npm install && npm run dev             # operator UI → :3000
+```
+
+Windows PowerShell (no `&&`):
+
+```powershell
+go build -o bin/ ./cmd/...
+$env:BENRI_DB_PATH = "./data/benri.sqlite"
+./bin/api
+```
+
+Demo users: `operator@hinata.example` / `demo-operator-pass` ·
+`admin@hinata.example` / `demo-admin-pass` (local demo only).
+
+Try the flow: log in → open inquiry INQ-006 (invoice request) → start a
+run → `./bin/agent-worker --once` → review the draft, its citations and
+the two proposed actions → approve → `./bin/executor-worker --once` →
+exactly one ticket and one demo outbox message exist. Re-approving is
+refused (409). A complaint (INQ-014) escalates to a human with a Japanese
+handoff summary and no draft.
+
+## MCP mode
+
+Workers use the same tool logic in-process by default. Set
+`BENRI_USE_MCP=1` to route through the real MCP server binaries over
+stdio (official MCP Go SDK, negotiated protocol 2026-07-28):
+
+```bash
+export BENRI_USE_MCP=1
+export BENRI_MCP_KB_BIN=./bin/mcp-kb BENRI_MCP_CRM_BIN=./bin/mcp-crm BENRI_MCP_TICKET_BIN=./bin/mcp-ticket
+```
+
+The agent worker can only reach the KB/CRM servers; only the executor
+spawns the ticket server; tenant context is bound at server launch.
+
+## Evaluation & smoke
+
+```bash
+make eval        # dictionary benchmark + 50-case gold run → evals/reports/
+make smoke       # binaries + MCP end-to-end → SMOKE OK
+make test        # go test ./...
+make generate    # regenerate OpenAPI (Go/TS) + sqlc outputs
+make generate-check   # drift check (fails on any generated-file drift)
+```
+
+## Layout
+
+```
+cmd/{api,agent-worker,executor-worker,mcp-kb,mcp-crm,mcp-ticket,eval,smoke}
+internal/{api,auth,agent,approval,executor,jobs,modelrail,mcpclient,
+          mcpserver,retrieval,verify,japanese,observability,config,
+          domain,store,seed,proc,testutil}
+api/openapi.yaml            canonical HTTP contract
+db/{migrations,queries}     goose migrations (+ role grants), sqlc queries
+web/                        Next.js operator UI (generated API types)
+fixtures/ evals/            synthetic demo data + versioned gold dataset
+docs/                       architecture, threat model, eval methodology, runbook
+```
+
+## PostgreSQL / Docker (provided, unverified here)
+
+`docker-compose.yml` + `Dockerfile.backend` / `Dockerfile.web` run the
+PostgreSQL path with per-role database users; goose migrations and sqlc
+queries are in `db/`. The agent-worker image ships no ticket binary; the
+executor image ships no ModelRail key. **No Docker or PostgreSQL exists
+on the build machine, so this path is provided but unverified** — the
+locally verified store is SQLite (pure-Go driver). Details and the full
+item-by-item status: `VERIFICATION-REPORT.md`.
+
+## Docs
+
+- `docs/architecture.md` — processes, trust boundary, data path
+- `docs/threat-model.md` — threats, controls, known limits
+- `docs/eval-methodology.md` — dataset, metrics, gates, negative controls
+- `docs/runbook.md` — operations and failure handling
+- `SPEC.md` — the build specification (v3.0)
