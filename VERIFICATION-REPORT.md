@@ -1,1 +1,168 @@
-IyBCZW5yaSBBZ2VudCDigJQgVmVyaWZpY2F0aW9uIFJlcG9ydCAodjMuMCwgR28gKyBUeXBlU2NyaXB0KQoKQnVpbGQ6IEJ1aWxkIFNwZWMgdjMuMCByZWJ1aWxkLCAyMDI2LTExLTEyLiBUaGUgdjIgcmVwb3J0IGlzIGFyY2hpdmVkIGF0CmBkb2NzL3ZlcmlmaWNhdGlvbi1yZXBvcnQtdjIubWRgLiBFdmVyeXRoaW5nIGJlbG93IHdhcyBleGVjdXRlZCBvbiB0aGlzCm1hY2hpbmUgdW5sZXNzIGl0IGlzIGxpc3RlZCB1bmRlciAqKk5PVCB2ZXJpZmllZCoqLgoKIyMgVG9vbGNoYWluIChwaW5uZWQpCgotIEdvICoqMS4yNy40KiogKGRvd25sb2FkZWQgZnJvbSBnby5kZXYsIHRhcmJhbGwgc2hhMjU2CiAgYDcyMjY3MzZjMjMzOTcxOWNkYTI4ZmJmM2E1NGQ3MWFhNjNiY2VmZTM3NmU5OGNlZjAwMDM0MjY4ZGFiMjQ4NDBgKSwKICBwaW5uZWQgaW4gYGdvLm1vZGAsIENJLCBhbmQgYERvY2tlcmZpbGUuYmFja2VuZGAuCi0gb2FwaS1jb2RlZ2VuICoqdjIuOC4yKiosIHNxbGMgKip2MS4zMS4xKiosIGdvb3NlICoqdjMuMzAuMCoqLgotIEtleSBHbyBkZXBzIChnby5tb2QvZ28uc3VtKTogY2hpIHY1LjUuMCwgcGd4L3Y1IHY1LjEzLjAsIE1DUCBnby1zZGsKICAqKnYxLjguMCoqIChzdGRpbyBzcGlrZTogbmVnb3RpYXRlZCBwcm90b2NvbCB2ZXJzaW9uICoqMjAyNi0wNy0yOCoqKSwKICBrYWdvbWUvdjIgdjIuMTEuMSArIGthZ29tZS1kaWN0L2lwYSAmIHVuaSB2MS4yLjYsIG90ZWwgdjEuNDcuMCwKICBtb2Rlcm5jLm9yZy9zcWxpdGUgdjEuNjIuMCAocHVyZSBHbywgbm8gY2dvKSwgeC90ZXh0IHYwLjQ0LjAuCi0gV2ViIChleGFjdCBwaW5zIGluIHdlYi9wYWNrYWdlLmpzb24pOiBuZXh0IDE1LjUuMjksIHJlYWN0IDE5LjEuMCwKICB0eXBlc2NyaXB0IDUuOS4zLCBvcGVuYXBpLXR5cGVzY3JpcHQgNy4xMy4wLgoKIyMgVmVyaWZpY2F0aW9uIGNvbW1hbmRzIOKAlCByZWFsIG91dHB1dHMKCnwgQ2hlY2sgfCBSZXN1bHQgfAp8LS0tfC0tLXwKfCBgZ29mbXQgLWwgY21kIGludGVybmFsYCB8IGNsZWFuIChubyBmaWxlcyBsaXN0ZWQpIHwKfCBgZ28gdmV0IC4vLi4uYCB8IGNsZWFuIHwKfCBgZ28gYnVpbGQgLi8uLi5gIHwgT0sgfAp8IGBnbyB0ZXN0IC4vLi4uIC1jb3VudD0xYCB8ICoqMzUvMzUgUEFTUywgMCBmYWlsKiogKDggcGFja2FnZXMpIHwKfCBgQ0dPX0VOQUJMRUQ9MSBnbyB0ZXN0IC1yYWNlIC4vLi4uIC1jb3VudD0xYCB8ICoqYWxsIDggcGFja2FnZXMgUEFTUyoqIHwKfCBgbWFrZSBnZW5lcmF0ZS1jaGVja2AgfCBgZ2VuZXJhdGUtY2hlY2s6IG5vIGRyaWZ0YCAob2FwaS1jb2RlZ2VuICsgb3BlbmFwaS10eXBlc2NyaXB0ICsgc3FsYyByZWdlbmVyYXRlZCBhbmQgZGlmZmVkKSB8Cnwgd2ViIGBucG0gcnVuIHR5cGVjaGVja2AgfCBjbGVhbiB8Cnwgd2ViIGBucG0gcnVuIGJ1aWxkYCB8IFBBU1MgfAp8IHdlYiBydW50aW1lIHZzIEdvIEFQSSB8IDIwMCBvbiAvLCAvZXNjYWxhdGlvbnMsIC9hZG1pbiwgL2xvZ2luLCAvaW5xdWlyaWVzL0lOUS0wMDEgfAp8IGBnbyBydW4gLi9jbWQvZXZhbGAgKGJpbi9ldmFsKSB8IGV4aXQgMCwgYWxsIMKnMTEuMyBnYXRlcyBQQVNTIChiZWxvdykgfAp8IGBtYWtlIHNtb2tlYCAoYmluL3Ntb2tlKSB8ICoqU01PS0UgT0sqKiDigJQgdHJhbnNjcmlwdCBhdCBgZXZhbHMvcmVwb3J0cy9zbW9rZS10cmFuc2NyaXB0LnR4dGAgfAoKIyMgRXZhbCBoZWFkbGluZSBtZXRyaWNzIChtb2NrIExMTSwgZ29sZCB2MS4wLjAsIEdvIHJ1bm5lcikKCnwgTWV0cmljIHwgVmFsdWUgfCBEZW5vbWluYXRvciB8CnwtLS18LS0tfC0tLXwKfCBDbGFzc2lmaWNhdGlvbiBhY2N1cmFjeSB8IDAuOTgwMCB8IDQ5LzUwIHwKfCBDbGFzc2lmaWNhdGlvbiBtYWNyby1GMSB8IDAuOTc1MyB8IDkgaW50ZW50cyB8CnwgRXNjYWxhdGlvbiBwcmVjaXNpb24gLyByZWNhbGwgLyBGMSB8IDEuMDAwMCAvIDEuMDAwMCAvIDEuMDAwMCB8IFRQPTE2IEZQPTAgRk49MCAoMTYgbXVzdC1lc2NhbGF0ZSkgfAp8IFJldHJpZXZhbCBSZWNhbGxANSB8IDAuOTYyNSB8IDQwIGxhYmVsbGVkIGNhc2VzIHwKfCBSZXRyaWV2YWwgTVJSIHwgMC44ODc1IHwgNDAgbGFiZWxsZWQgY2FzZXMgfAp8IENpdGF0aW9uIHByZWNpc2lvbiAvIHJlY2FsbCB8IDAuNzk0MSAvIDAuOTI2NSB8IDM0IGRyYWZ0ZWQgbGFiZWxsZWQgY2FzZXMgfAp8IFZlcmlmaWNhdGlvbiBwYXNzIHJhdGUgfCAxLjAwMDAgfCAzNCBkcmFmdGVkIHwKfCBGb3JiaWRkZW4tY2xhaW0gdmlvbGF0aW9ucyB8IDAgfCA1MCBjYXNlcyB8CnwgTGF0ZW5jeSBwNTAgLyBwOTUgKGluLXByb2Nlc3MgbW9jaykgfCB+MzU0bXMgLyB+NDIybXMgfCA1MCBydW5zIOKAlCBOT1QgcHJvZHVjdGlvbiBmaWd1cmVzIHwKCkthZ29tZSBiZW5jaG1hcmsgKMKnOC4yLCBsYWJlbGxlZCBjb3JwdXMsIHNlYXJjaCBtb2RlKTogSVBBIFJlY2FsbEA1CioqMC45Mzc1KiosIE1SUiAqKjAuODk1OCoqOyBVbmlEaWMgUmVjYWxsQDUgKiowLjkzNzUqKiwgTVJSICoqMC44OTE3KiouCldpbm5lcjogKipJUEFkaWMqKiAoYGthZ29tZS1pcGEtMS4yLjZgKSwgaW5kZXggdmVyc2lvbgpgbGV4aWNhbC12My1rYWdvbWUtaXBhLTEuMi42YC4gVGhlIHYyIHJldHJpZXZhbCB0aHJlc2hvbGRzIChjb250ZW50IDAuMTgsCmludGVudC1nYXRlIDAuMTIpIGNhcnJpZWQgb3ZlcjsgdGhlIEdvIGV2YWwgcmVwcm9kdWNlZCB2MidzIGhlYWRsaW5lCm1ldHJpY3MgZXhhY3RseSAoYWNjdXJhY3ksIG1hY3JvLUYxLCBlc2NhbGF0aW9uLCBSZWNhbGxANSBpZGVudGljYWw7CmNpdGF0aW9uIHByZWNpc2lvbi9yZWNhbGwgZGlmZmVyIHNsaWdodGx5IOKAlCAwLjc5NDEvMC45MjY1IHZzIHYyCjAuNjkxMi8wLjk0MTIg4oCUIGJlY2F1c2UgS2Fnb21lIHRva2VuaXphdGlvbiBjaGFuZ2VzIGRyYWZ0IHNlbnRlbmNlCnNlbGVjdGlvbikuCgpEYXRhc2V0L2ZpeHR1cmVzIGJ5dGUtaWRlbnRpY2FsIHRvIHYyIChzaGEyNTYpOiBnb2xkLmpzb25sCmBiYjc0OTkyMOKApmU0OWAsIGlucXVpcmllcyBgNWRmN2VjMDjigKYyMjlgLCBhcnRpY2xlcyBgY2Q2NjVlNTjigKYxNTJgLApjdXN0b21lcnNfb3JkZXJzIGBlNjllZThjY+KApmNlYjFgLgoKIyMgQWNjZXB0YW5jZSBjcml0ZXJpYSAowqcyLjIpLCBpdGVtIGJ5IGl0ZW0KCjEuICoqQ29tcG9zZSBzdGFjayoqIOKAlCBgZG9ja2VyLWNvbXBvc2UueW1sYCArIERvY2tlcmZpbGVzIHByb3ZpZGVkIHdpdGgKICAgcGVyLXJvbGUgZW52ICjCpzE4KS4gKipVTkVYRUNVVEVEIGhlcmUgKG5vIERvY2tlcikqKiDigJQgc2VlIE5PVCB2ZXJpZmllZC4KMi4gKipTZWVkKiog4oCUIFZFUklGSUVEOiBHbyBzZWVkIGxvYWRzIDMwIGlucXVpcmllcyAvIDIwIEtCIGFydGljbGVzIC8KICAgMTAgb3JkZXJzICsgY3VzdG9tZXJzIC8gMiB0ZW5hbnRzIC8gZGVtbyBvcGVyYXRvcithZG1pbiB1c2VycywKICAgcmVkYWN0ZWQgYXQgc2VlZCB3aXRoIHRoZSByZWFsIHJlZGFjdG9yICh0ZXN0ICsgc21va2UpLgozLiAqKlJvdXRpbmUgcGlwZWxpbmUqKiDigJQgVkVSSUZJRUQ6IHBpcGVsaW5lIHRlc3RzICsgZXZhbCAoNDkvNTAgaW50ZW50CiAgIGFjY3VyYWN5KSArIHNtb2tlOyBJTlEtMDAxL0lOUS0wMDYgcmVhY2ggYXdhaXRpbmdfcmV2aWV3IHdpdGgKICAgY2l0YXRpb25zIGFuZCBDUk0gb3JkZXIgY29udGV4dC4KNC4gKipJbnNwZWN0L2VkaXQvYXBwcm92ZSBzZWxlY3RlZCoqIOKAlCBWRVJJRklFRDogZHJhZnQgZGV0YWlsIEFQSSwKICAgcmV2aXNpb24gZW5kcG9pbnQgKHJlLXZlcmlmaWVzKSwgYXBwcm92YWwgb3ZlciBIVFRQIHRlc3Q7IHdlYiBVSQogICBzY3JlZW5zIGtlcHQgZnJvbSB2Mi4KNS4gKipBcHByb3ZhbCBiaW5kaW5nICsgZXhhY3RseS1vbmNlKiog4oCUIFZFUklGSUVEOiBhcHByb3ZhbC9leGVjdXRvcgogICBmbG93IHRlc3RzIChleGFjdGx5IDEgdGlja2V0ICsgMSBvdXRib3gsIHJlcGxheS1zYWZlKSwgcmUtYXBwcm92YWwKICAgcmVmdXNlZCwgd3JvbmcgcmV2aXNpb24vaGFzaCByZWZ1c2VkLCBwYXJ0aWFsIGFwcHJvdmFsIGhvbm91cmVkLgo2LiAqKkVzY2FsYXRpb24gY2xhc3NlcyoqIOKAlCBWRVJJRklFRDogY29tcGxhaW50ICsgbm8tZXZpZGVuY2UgcGlwZWxpbmUKICAgdGVzdHM7IGV2YWw6IDE2LzE2IG11c3QtZXNjYWxhdGUgY2F1Z2h0LCAwIGZhbHNlLXNhZmUuIChJZGVudGl0eS0KICAgYW1iaWd1b3VzIGFuZCBzYWZldHktc2Vuc2l0aXZlIGNhc2VzIGFyZSBpbiB0aGUgZ29sZCBzZXQgYW5kIHBhc3MuKQo3LiAqKkluamVjdGlvbiByZXNpc3RhbmNlKiog4oCUIFZFUklGSUVEOiBpbmplY3Rpb24gcGlwZWxpbmUgdGVzdCArIHNtb2tlCiAgIChlc2NhbGF0ZXMsIG5vIHdyaXRlcywgYWN0aW9uIHNldCB1bmNoYW5nZWQg4oCUIGFjdGlvbnMgYXJlCiAgIGRldGVybWluaXN0aWMgdGVtcGxhdGVzLCBuZXZlciBtb2RlbCBvdXRwdXQpOyB0b29sLW91dHB1dCBpbmplY3Rpb24KICAgaG9vayAoTWFsZm9ybWVkVG9vbE91dHB1dCkgcG9ydGVkIGluIHRoZSBwaXBlbGluZS4KOC4gKipFZGl0ZWQgZHJhZnQgcmUtdmVyaWZpZWQqKiDigJQgVkVSSUZJRUQ6IHJldmlzaW9uIGVuZHBvaW50IHJlYnVpbGRzCiAgIHRoZSB2ZXJpZmljYXRpb24gY29udGV4dCBhbmQgcmUtcnVucyB0aGUgdmVyaWZpZXI7IGFwcHJvdmFsCiAgIHJlLXZlcmlmaWVzIGFnYWluIGFuZCByZWZ1c2VzIHdpdGggUkVWRVJJRklDQVRJT05fRkFJTEVEOyBhcHByb3ZhbHMKICAgYXJlIGJvdW5kIHRvIHJldmlzaW9uK2hhc2ggc28gYSBwcmlvciBhcHByb3ZhbCBjYW5ub3QgY292ZXIgYSBuZXcKICAgcmV2aXNpb24gKHRlc3RzOiBSRVZJU0lPTl9NSVNNQVRDSCAvIERSQUZUX05PVF9QRU5ESU5HIHBhdGhzKS4KOS4gKipLaWxsL3Jlc3VtZSoqIOKAlCBWRVJJRklFRCBmb3IgdGhlIGFnZW50IChjcmFzaC1hZnRlci1zdGVwIHRlc3Q6CiAgIHJlc3VtZSBjb21wbGV0ZXMgd2l0aCBubyBkdXBsaWNhdGVkIHN0ZXBzKS4gRXhlY3V0b3Iga2lsbC1kdXJpbmctd3JpdGUKICAgaXMgY292ZXJlZCBieSB0aGUgYW1iaWd1b3VzLW91dGNvbWUgdGVzdCAoam9iIOKGkiBgdW5rbm93bmAsIG5ldmVyCiAgIGJsaW5kLXJldHJpZWQpIGFuZCBpZGVtcG90ZW50IHJlcGxheTsgYSBsaXRlcmFsIG1pZC13cml0ZSBwcm9jZXNzIGtpbGwKICAgd2FzIG5vdCBwZXJmb3JtZWQuCjEwLiAqKlRlbmFudCBzY29waW5nKiog4oCUIFZFUklGSUVEOiBzdG9yZSBjcm9zcy10ZW5hbnQgdGVzdCwgcGlwZWxpbmUKICAgIGNyb3NzLXRlbmFudCB0ZXN0LCBNQ1AgdGVuYW50LWJpbmRpbmcgdGVzdCAoYXJndW1lbnQgdGVuYW50IOKJoCBsYXVuY2gKICAgIHRlbmFudCByZWZ1c2VkKS4KMTEuICoqVHJhY2VzKiog4oCUIFZFUklGSUVEIGxvY2FsbHk6IHRyYWNlLXRyZWUgdGVzdCBhc3NlcnRzIGBiZW5yaS5ydW5gICsKICAgIHN0ZXAgc3BhbnMgaW4gdGhlIGluLW1lbW9yeSByZWNvcmRlciB3aXRoIGEgZGVsaWJlcmF0ZWx5IHVucmVhY2hhYmxlCiAgICBPVExQIGVuZHBvaW50IChleHBvcnQgZmFpbHVyZSBkb2VzIG5vdCBmYWlsIHRoZSBydW4pLiBMaXZlIEthaXJvCiAgICBpbmdlc3Rpb24gaXMgTk9UIHZlcmlmaWVkLgoxMi4gKipNb2RlbFJhaWwgZmFpbHVyZSoqIOKAlCBWRVJJRklFRDogZ2F0ZXdheS1kb3duIHRlc3Qg4oaSIHJ1biBgZmFpbGVkYAogICAgd2l0aCBHQVRFV0FZX1VOQVZBSUxBQkxFOyBwZXItcnVuIGhhcmQgbGltaXRzIGJvdW5kIGV2ZXJ5IHJ1bi4KMTMuICoqQ0kgdGVzdCBjb3ZlcmFnZSoqIOKAlCBDSSB5YW1sIHByb3ZpZGVkICh1bml0L2ludGVncmF0aW9uL3N0YXRlLwogICAgYXV0aG9yaXphdGlvbi9pbmplY3Rpb24vcmV0cmlldmFsL2V2YWwgc3VpdGVzIGFyZSB0aGUgR28gdGVzdHMgKwogICAgZXZhbCBnYXRlKS4gKipDSSBpdHNlbGYgTk9UIHJ1bioqIChubyBHaXRIdWIgcnVuIGluIHRoaXMgZGVsaXZlcnkpLgoxNC4gKipFdmFsIHJlcG9ydCoqIOKAlCBWRVJJRklFRDogYGV2YWxzL3JlcG9ydHMvbGF0ZXN0Lmpzb25gICsgYGxhdGVzdC5tZGAKICAgIHdpdGggZGVub21pbmF0b3JzIGFuZCBkYXRhc2V0L3Byb21wdC9wb2xpY3kvbW9kZWwvaW5kZXggdmVyc2lvbnMuCjE1LiAqKlB1YmxpYyBkZW1vKiog4oCUIG5vdCBkZXBsb3llZCBpbiB0aGlzIGRlbGl2ZXJ5OyBkZW1vIG1vZGUgaXMKICAgIGZpeHR1cmUtb25seSArIG1vY2stbGFiZWxsZWQgYnkgY29uc3RydWN0aW9uIChgL2hlYWx0aGAgbW9kZSBsYWJlbCkuCjE2LiAqKlJFQURNRSBob25lc3R5Kiog4oCUIFJFQURNRSBkb2N1bWVudHMgZGVwbG95bWVudCBzdGF0ZSwgbGltaXRhdGlvbnMsCiAgICBkZW1vIGNyZWRlbnRpYWxzLCBhbmQgb25seSB0aGUgbWVhc3VyZWQgcmVzdWx0cyBhYm92ZS4gTm8gTm9kZS5qcwogICAgYmFja2VuZCBjbGFpbSAowqcwLjIpOiB0aGUgYmFja2VuZCBpcyBHbzsgVFMgaXMgdGhlIHdlYiBVSSBvbmx5LgoxNy4gKipHby93ZWIgQ0kgY2hlY2tzICgjMTcsIE5FVykqKiDigJQgZ29mbXQvdmV0L3Rlc3QvdGVzdC1yYWNlIGFsbCBydW4KICAgIGxvY2FsbHkgKGFib3ZlKSBhbmQgYXJlIHdpcmVkIGludG8gYC5naXRodWIvd29ya2Zsb3dzL2NpLnltbGAuIFdlYjoKICAgIHR5cGVjaGVjayArIGJ1aWxkIHdpcmVkIGFuZCBydW4gbG9jYWxseS4gR0FQOiB0aGUgd2ViIGFwcCBoYXMgbm8KICAgIGVzbGludCBjb25maWcgb3IgVUkgdGVzdCBzdWl0ZSAoc2FtZSBhcyB2MiksIHNvIENJIGhhcyBubyB3ZWIKICAgIGxpbnQvVUktdGVzdCBzdGVwIOKAlCByZWNvcmRlZCBoZXJlIHJhdGhlciB0aGFuIGZha2VkLgoxOC4gKipHZW5lcmF0ZWQgY29udHJhY3QgdHlwZXMgKCMxOCwgTkVXKSoqIOKAlCBWRVJJRklFRDogR28gc2VydmVyIHN0dWJzICsKICAgIHR5cGVzIGZyb20gb2FwaS1jb2RlZ2VuLCBUUyB0eXBlcyBmcm9tIG9wZW5hcGktdHlwZXNjcmlwdCwgc3FsYwogICAgb3V0cHV0IOKAlCBhbGwgZ2VuZXJhdGVkIGZyb20gYGFwaS9vcGVuYXBpLnlhbWxgIC8gYGRiL3F1ZXJpZXNgLCBhbGwKICAgIGNvbW1pdHRlZCwgYG1ha2UgZ2VuZXJhdGVgICsgZHJpZnQgY2hlY2sgZXhlcmNpc2VkIGxvY2FsbHkgKG5vCiAgICBkcmlmdCkuCgojIyBUcnVzdCBib3VuZGFyeSAowqc5LCB2MyBmaW5lcikg4oCUIHRlc3QgZXZpZGVuY2UKCmBpbnRlcm5hbC9zdG9yZWAgY2FwYWJpbGl0eSB0ZXN0cyBwcm92ZTogYWdlbnQgaGFuZGxlIGNhbm5vdCBpbnNlcnQKYXBwcm92YWxzIC8gZXhlY3V0aW9uIGpvYnMgLyB0aWNrZXRzIC8gb3V0Ym94OyBhcGkgaGFuZGxlIGNhbm5vdCB3cml0ZQp0aWNrZXRzIC8gb3V0Ym94OyBleGVjdXRvciBoYW5kbGUgY2Fubm90IGluc2VydCB0aWNrZXRzIGRpcmVjdGx5IChvbmx5CnRoZSB0aWNrZXQtbWNwIHJvbGUgY2FuKTsga2ItbWNwIGhhbmRsZSBjYW5ub3Qgd3JpdGUuIFRoZSBhZ2VudC13b3JrZXIKaW1hZ2Ugc2hpcHMgbm8gbWNwLXRpY2tldCBiaW5hcnk7IHRoZSBleGVjdXRvciBpbWFnZSBzaGlwcyBvbmx5Cm1jcC10aWNrZXQgYW5kIGl0cyBlbnYgY2FycmllcyBubyBNb2RlbFJhaWwga2V5LgoKIyMgRGV2aWF0aW9ucyBmcm9tIHNwZWMgKGFuZCB3aHkpCgoxLiAqKlBnU3RvcmUgbWV0aG9kIGJvZGllcyBhcmUgZXhwbGljaXQgc3R1YnMqKiByZXR1cm5pbmcgYW4KICAgInVudmVyaWZpZWQiIGVycm9yLiBUaGUgUEcgcGF0aCBzaGlwcyBnb29zZSBtaWdyYXRpb25zIChpbmNsLgogICBwZXItcm9sZSBncmFudHMpLCBzcWxjIHF1ZXJpZXMgKyBnZW5lcmF0ZWQgYGRiZ2VuYCBjb2RlIChnZW5lcmF0aW9uCiAgIHZlcmlmaWVkKSwgdGhlIHBneCBwb29sIGhhbmRsZSwgYW5kIHBlci1yb2xlIFVSTCB3aXJpbmcg4oCUIGJ1dCB3aXRoIG5vCiAgIFBvc3RncmVTUUwgb24gdGhpcyBtYWNoaW5lLCBhIGJsaW5kIDcwLW1ldGhvZCBwb3J0IGNvdWxkIG5vdCBiZQogICB2ZXJpZmllZCBhbmQgd291bGQgYmUgYSBmYWxzZSBjbGFpbS4gVGhlIFNRTGl0ZSBzdG9yZSBpcyB0aGUgdmVyaWZpZWQKICAgaW1wbGVtZW50YXRpb24gb2YgdGhlIHNhbWUgY29udHJhY3QuCjIuICoqQXBwcm92ZVJlcXVlc3Qgc2hhcGUqKjogdGhlIGNhbm9uaWNhbCBPcGVuQVBJIGBBcHByb3ZlUmVxdWVzdGAKICAgY2FycmllcyBgcmV2aXNpb25gICsgYHNlbGVjdGVkX2FjdGlvbl9pZHNgIG9ubHksIHNvIHRoZSBBUEkgYmluZHMgdGhlCiAgIHN0b3JlZCBwYXlsb2FkIGhhc2hlcyAodGhlIG9uZXMgc2hvd24gaW4gdGhlIGRyYWZ0IGRldGFpbCkgaW50byB0aGUKICAgYXBwcm92YWwgcmVjb3JkLiBUaGUgZXhlY3V0b3IvdGlja2V0IHNlcnZlciBzdGlsbCByZS12YWxpZGF0ZSBzdG9yZWQKICAgcGF5bG9hZCDihpQgc3RvcmVkIGhhc2gg4oaUIGFwcHJvdmFsIGJlZm9yZSBhbnkgd3JpdGUuCjMuICoqSmFwYW5lc2Ugc3R5bGUgbGVuZ3RoIGNoZWNrKiogdXNlcyBydW5lIGNvdW50cyAodjIgdXNlZCBKUyBVVEYtMTYKICAgbGVuZ3Rocykg4oCUIGEgZGVsaWJlcmF0ZSwgcmVjb3JkZWQgcG9ydGluZyBkaWZmZXJlbmNlOyB0aHJlc2hvbGRzIGFyZQogICBnZW5lcm91cyAoODDigJMxMjAwKSBhbmQgbm8gZ29sZCBjYXNlIGlzIG5lYXIgdGhlIGJvdW5kYXJ5Lgo0LiAqKlNtb2tlL01ha2VmaWxlIGBzZWVkYCByZWNpcGUqKiBzZWVkcyB2aWEgQVBJIGZpcnN0LWJvb3QgKHRoZSBzYW1lCiAgIGNvZGUgcGF0aCB1c2VkIGV2ZXJ5d2hlcmUpIHJhdGhlciB0aGFuIGEgc2VwYXJhdGUgc2VlZCBiaW5hcnkuCgojIyBOT1QgdmVyaWZpZWQKCi0gUG9zdGdyZVNRTCBleGVjdXRpb24gb2YgYW55IGtpbmQgKG1pZ3JhdGlvbnMsIGdyYW50cywgc3FsYyBxdWVyaWVzLAogIFBnU3RvcmUpIOKAlCBubyBQb3N0Z3JlU1FMIG9uIHRoaXMgbWFjaGluZS4KLSBEb2NrZXIgLyBEb2NrZXIgQ29tcG9zZSAoRG9ja2VyZmlsZXMgKyBjb21wb3NlIHByb3ZpZGVkLCB1bmV4ZWN1dGVkKS4KLSBHaXRIdWIgQ0kgcnVuIG9mIGAuZ2l0aHViL3dvcmtmbG93cy9jaS55bWxgIChwcm92aWRlZCwgbm90IHJ1bikuCi0gTGl2ZSBNb2RlbFJhaWwgaW5mZXJlbmNlIChtb2NrIG1vZGUgdmVyaWZpZWQ7IGxpdmUtcmVzcG9uc2UgcGFyc2luZyBpcwogIGNvbnRyYWN0LXRlc3RlZCB3aXRoIGFuIGluamVjdGVkIHRyYW5zcG9ydCkuCi0gTGl2ZSBLYWlyby9PVExQIGluZ2VzdGlvbiAoc3BhbiB0cmVlIHZlcmlmaWVkIGluLW1lbW9yeTsgZXhwb3J0ZXIgaXMKICBhc3luYyBhbmQgZmFpbHVyZS1pc29sYXRlZCkuCi0gTmF0aXZlIEphcGFuZXNlIHJldmlldyBvZiBmaXh0dXJlcy9nb2xkIHRleHQgKGxhYmVsbGVkCiAgYG5vdF9uYXRpdmVfcmV2aWV3ZWRgIGV2ZXJ5d2hlcmUpLgotIHBucG0gKHYzIHVzZXMgbnBtIHdvcmtzcGFjZXMgZm9yIHdlYiBvbmx5OyB0aGUgR28gYmFja2VuZCBoYXMgbm8gSlMpLgo=
+# Benri Agent — Verification Report (v3.0, Go + TypeScript)
+
+Build: Build Spec v3.0 rebuild, 2026-11-12. The v2 report is archived at
+`docs/verification-report-v2.md`. Everything below was executed on this
+machine unless it is listed under **NOT verified**.
+
+## Toolchain (pinned)
+
+- Go **1.27.4** (downloaded from go.dev, tarball sha256
+  `7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840`),
+  pinned in `go.mod`, CI, and `Dockerfile.backend`.
+- oapi-codegen **v2.8.2**, sqlc **v1.31.1**, goose **v3.30.0**.
+- Key Go deps (go.mod/go.sum): chi v5.5.0, pgx/v5 v5.13.0, MCP go-sdk
+  **v1.8.0** (stdio spike: negotiated protocol version **2026-07-28**),
+  kagome/v2 v2.11.1 + kagome-dict/ipa & uni v1.2.6, otel v1.47.0,
+  modernc.org/sqlite v1.62.0 (pure Go, no cgo), x/text v0.44.0.
+- Web (exact pins in web/package.json): next 15.5.29, react 19.1.0,
+  typescript 5.9.3, openapi-typescript 7.13.0.
+
+## Verification commands — real outputs
+
+| Check | Result |
+|---|---|
+| `gofmt -l cmd internal` | clean (no files listed) |
+| `go vet ./...` | clean |
+| `go build ./...` | OK |
+| `go test ./... -count=1` | **35/35 PASS, 0 fail** (8 packages) |
+| `CGO_ENABLED=1 go test -race ./... -count=1` | **all 8 packages PASS** |
+| `make generate-check` | `generate-check: no drift` (oapi-codegen + openapi-typescript + sqlc regenerated and diffed) |
+| web `npm run typecheck` | clean |
+| web `npm run build` | PASS |
+| web runtime vs Go API | 200 on /, /escalations, /admin, /login, /inquiries/INQ-001 |
+| `go run ./cmd/eval` (bin/eval) | exit 0, all §11.3 gates PASS (below) |
+| `make smoke` (bin/smoke) | **SMOKE OK** — transcript at `evals/reports/smoke-transcript.txt` |
+
+## Eval headline metrics (mock LLM, gold v1.0.0, Go runner)
+
+| Metric | Value | Denominator |
+|---|---|---|
+| Classification accuracy | 0.9800 | 49/50 |
+| Classification macro-F1 | 0.9753 | 9 intents |
+| Escalation precision / recall / F1 | 1.0000 / 1.0000 / 1.0000 | TP=16 FP=0 FN=0 (16 must-escalate) |
+| Retrieval Recall@5 | 0.9625 | 40 labelled cases |
+| Retrieval MRR | 0.8875 | 40 labelled cases |
+| Citation precision / recall | 0.7941 / 0.9265 | 34 drafted labelled cases |
+| Verification pass rate | 1.0000 | 34 drafted |
+| Forbidden-claim violations | 0 | 50 cases |
+| Latency p50 / p95 (in-process mock) | ~354ms / ~422ms | 50 runs — NOT production figures |
+
+Kagome benchmark (§8.2, labelled corpus, search mode): IPA Recall@5
+**0.9375**, MRR **0.8958**; UniDic Recall@5 **0.9375**, MRR **0.8917**.
+Winner: **IPAdic** (`kagome-ipa-1.2.6`), index version
+`lexical-v3-kagome-ipa-1.2.6`. The v2 retrieval thresholds (content 0.18,
+intent-gate 0.12) carried over; the Go eval reproduced v2's headline
+metrics exactly (accuracy, macro-F1, escalation, Recall@5 identical;
+citation precision/recall differ slightly — 0.7941/0.9265 vs v2
+0.6912/0.9412 — because Kagome tokenization changes draft sentence
+selection).
+
+Dataset/fixtures byte-identical to v2 (sha256): gold.jsonl
+`bb749920…e49`, inquiries `5df7ec08…229`, articles `cd665e58…152`,
+customers_orders `e69ee8cc…ceb1`.
+
+## Acceptance criteria (§2.2), item by item
+
+1. **Compose stack** — `docker-compose.yml` + Dockerfiles provided with
+   per-role env (§18). **UNEXECUTED here (no Docker)** — see NOT verified.
+2. **Seed** — VERIFIED: Go seed loads 30 inquiries / 20 KB articles /
+   10 orders + customers / 2 tenants / demo operator+admin users,
+   redacted at seed with the real redactor (test + smoke).
+3. **Routine pipeline** — VERIFIED: pipeline tests + eval (49/50 intent
+   accuracy) + smoke; INQ-001/INQ-006 reach awaiting_review with
+   citations and CRM order context.
+4. **Inspect/edit/approve selected** — VERIFIED: draft detail API,
+   revision endpoint (re-verifies), approval over HTTP test; web UI
+   screens kept from v2.
+5. **Approval binding + exactly-once** — VERIFIED: approval/executor
+   flow tests (exactly 1 ticket + 1 outbox, replay-safe), re-approval
+   refused, wrong revision/hash refused, partial approval honoured.
+6. **Escalation classes** — VERIFIED: complaint + no-evidence pipeline
+   tests; eval: 16/16 must-escalate caught, 0 false-safe. (Identity-
+   ambiguous and safety-sensitive cases are in the gold set and pass.)
+7. **Injection resistance** — VERIFIED: injection pipeline test + smoke
+   (escalates, no writes, action set unchanged — actions are
+   deterministic templates, never model output); tool-output injection
+   hook (MalformedToolOutput) ported in the pipeline.
+8. **Edited draft re-verified** — VERIFIED: revision endpoint rebuilds
+   the verification context and re-runs the verifier; approval
+   re-verifies again and refuses with REVERIFICATION_FAILED; approvals
+   are bound to revision+hash so a prior approval cannot cover a new
+   revision (tests: REVISION_MISMATCH / DRAFT_NOT_PENDING paths).
+9. **Kill/resume** — VERIFIED for the agent (crash-after-step test:
+   resume completes with no duplicated steps). Executor kill-during-write
+   is covered by the ambiguous-outcome test (job → `unknown`, never
+   blind-retried) and idempotent replay; a literal mid-write process kill
+   was not performed.
+10. **Tenant scoping** — VERIFIED: store cross-tenant test, pipeline
+    cross-tenant test, MCP tenant-binding test (argument tenant ≠ launch
+    tenant refused).
+11. **Traces** — VERIFIED locally: trace-tree test asserts `benri.run` +
+    step spans in the in-memory recorder with a deliberately unreachable
+    OTLP endpoint (export failure does not fail the run). Live Kairo
+    ingestion is NOT verified.
+12. **ModelRail failure** — VERIFIED: gateway-down test → run `failed`
+    with GATEWAY_UNAVAILABLE; per-run hard limits bound every run.
+13. **CI test coverage** — CI yaml provided (unit/integration/state/
+    authorization/injection/retrieval/eval suites are the Go tests +
+    eval gate). **CI itself NOT run** (no GitHub run in this delivery).
+14. **Eval report** — VERIFIED: `evals/reports/latest.json` + `latest.md`
+    with denominators and dataset/prompt/policy/model/index versions.
+15. **Public demo** — not deployed in this delivery; demo mode is
+    fixture-only + mock-labelled by construction (`/health` mode label).
+16. **README honesty** — README documents deployment state, limitations,
+    demo credentials, and only the measured results above. No Node.js
+    backend claim (§0.2): the backend is Go; TS is the web UI only.
+17. **Go/web CI checks (#17, NEW)** — gofmt/vet/test/test-race all run
+    locally (above) and are wired into `.github/workflows/ci.yml`. Web:
+    typecheck + build wired and run locally. GAP: the web app has no
+    eslint config or UI test suite (same as v2), so CI has no web
+    lint/UI-test step — recorded here rather than faked.
+18. **Generated contract types (#18, NEW)** — VERIFIED: Go server stubs +
+    types from oapi-codegen, TS types from openapi-typescript, sqlc
+    output — all generated from `api/openapi.yaml` / `db/queries`, all
+    committed, `make generate` + drift check exercised locally (no
+    drift).
+
+## Trust boundary (§9, v3 finer) — test evidence
+
+`internal/store` capability tests prove: agent handle cannot insert
+approvals / execution jobs / tickets / outbox; api handle cannot write
+tickets / outbox; executor handle cannot insert tickets directly (only
+the ticket-mcp role can); kb-mcp handle cannot write. The agent-worker
+image ships no mcp-ticket binary; the executor image ships only
+mcp-ticket and its env carries no ModelRail key.
+
+## Deviations from spec (and why)
+
+1. **PgStore method bodies are explicit stubs** returning an
+   "unverified" error. The PG path ships goose migrations (incl.
+   per-role grants), sqlc queries + generated `dbgen` code (generation
+   verified), the pgx pool handle, and per-role URL wiring — but with no
+   PostgreSQL on this machine, a blind 70-method port could not be
+   verified and would be a false claim. The SQLite store is the verified
+   implementation of the same contract.
+2. **ApproveRequest shape**: the canonical OpenAPI `ApproveRequest`
+   carries `revision` + `selected_action_ids` only, so the API binds the
+   stored payload hashes (the ones shown in the draft detail) into the
+   approval record. The executor/ticket server still re-validate stored
+   payload ↔ stored hash ↔ approval before any write.
+3. **Japanese style length check** uses rune counts (v2 used JS UTF-16
+   lengths) — a deliberate, recorded porting difference; thresholds are
+   generous (80–1200) and no gold case is near the boundary.
+4. **Smoke/Makefile `seed` recipe** seeds via API first-boot (the same
+   code path used everywhere) rather than a separate seed binary.
+
+## NOT verified
+
+- PostgreSQL execution of any kind (migrations, grants, sqlc queries,
+  PgStore) — no PostgreSQL on this machine.
+- Docker / Docker Compose (Dockerfiles + compose provided, unexecuted).
+- GitHub CI run of `.github/workflows/ci.yml` (provided, not run).
+- Live ModelRail inference (mock mode verified; live-response parsing is
+  contract-tested with an injected transport).
+- Live Kairo/OTLP ingestion (span tree verified in-memory; exporter is
+  async and failure-isolated).
+- Native Japanese review of fixtures/gold text (labelled
+  `not_native_reviewed` everywhere).
+- pnpm (v3 uses npm workspaces for web only; the Go backend has no JS).
