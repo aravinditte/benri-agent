@@ -1,60 +1,88 @@
-# Benri Agent — Architecture
+# Benri Agent — architecture (v3, Go + TypeScript)
 
-Implements SPEC.md v2.0. One-line definition: Benri turns Japanese customer
-inquiries into evidence-backed response drafts and explicit action proposals;
-an authenticated operator reviews the exact content before a separate executor
-writes anything to the demo system.
+Benri Agent is an approval-gated support copilot for Japanese e-commerce
+support teams. An AI agent drafts replies and proposes side-effecting
+actions; a human operator approves exact drafts and exact actions; a
+separate executor performs only what was approved. The backend is Go; the
+operator UI is Next.js (TypeScript) and exists only in `web/`.
 
-## Components
+## Processes (one Go module, `cmd/`)
 
-| Component | Path | Role |
+| Process | Store role | Responsibility |
 |---|---|---|
-| API | `apps/api` (Fastify) | Auth (session tokens, hashed at rest), tenant-scoped endpoints, approval transaction. Never runs model reasoning. |
-| Agent worker | `apps/agent-worker` | Claims runs (lease + heartbeat), executes the 7-step pipeline, persists checkpoints. Runs with an **agent-role store handle** that structurally rejects writes to `tickets`, `outbox_messages`, `approvals`, `execution_jobs`. |
-| Executor worker | `apps/executor-worker` | Claims approved execution jobs, verifies payload hashes, performs each fixture action exactly once. No LLM client. Ambiguous outcomes become `unknown`, never blind-retried. |
-| Web UI | `apps/web` (Next.js) | Queue / run detail / review / escalations / admin. Japanese default, EN toggle. |
-| KB MCP | `packages/mcp-kb` | Read-only `search_kb`, `get_article` over stdio (MCP v2 packages, smoke-tested in this runtime). |
-| CRM MCP | `packages/mcp-crm` | Read-only `lookup_order` over synthetic fixtures. |
-| Ticket MCP | `packages/mcp-ticket` | Write-only, executor-hosted only: `create_ticket`, `add_ticket_note`. Takes `approved_action_id` only; loads and hash-verifies the canonical payload server-side. |
-| agent-core | `packages/agent-core` | Pipeline, deterministic policy, verifier, approval transaction, mock LLM, redaction. |
-| retrieval | `packages/retrieval` | Japanese lexical retrieval: NFKC + particle-split char bigrams, IDF-weighted content-coverage evidence gate (intent-aware). Dense retrieval disabled (see below). |
-| db | `packages/db` | Drizzle PostgreSQL schema + migration SQL + role SQL (provided, **unverified** — no PG here) and the portable `node:sqlite` store (locally verified) implementing the same repository contracts with capability-scoped handles. |
-| modelrail-client | `packages/modelrail-client` | OpenAI-compatible chat client (timeouts, usage parsing, typed `GATEWAY_UNAVAILABLE`) + mock mode. |
-| observability | `packages/observability` | OTel-shaped spans (`benri.run` + child spans per step/tool), in-memory collector, async optional OTLP/HTTP export to Kairo; exporter failure never fails a run. |
-| japanese-quality | `packages/japanese-quality` | Deterministic format/register checks (signature, banned phrases, casual endings). Mechanical only — not a fluency guarantee. |
+| `cmd/api` | `api` | HTTP API (chi + oapi-codegen from `api/openapi.yaml`). Approvals + execution-job insertion. Cannot write tickets/outbox. |
+| `cmd/agent-worker` | `agent` | Claims queued runs, executes the pipeline (§5.1). Can create runs/steps/drafts/PROPOSED actions only. Cannot approve, enqueue jobs, or write tickets/outbox. |
+| `cmd/executor-worker` | `executor` | Claims approved execution jobs. Inserts outbox records. Cannot insert tickets directly. |
+| `cmd/mcp-kb` | `kb-mcp` | Read-only KB search/get over MCP stdio. Tenant bound at launch. |
+| `cmd/mcp-crm` | `crm-mcp` | Read-only order lookup over MCP stdio. Tenant bound at launch. |
+| `cmd/mcp-ticket` | `ticket-mcp` | The ONLY ticket writer. Every call re-loads the persisted approval and validates the payload hash. |
+| `cmd/eval` | (throwaway DB) | Kagome dictionary benchmark + gold-set evaluation CLI. |
+| `cmd/smoke` | — | Live end-to-end smoke orchestrator (binaries + MCP on). |
 
-## Trust boundary
+## Trust boundary (§3.3/§9)
 
-The process that interprets untrusted customer text (agent worker) has no
-write capability: separate store role, read-only MCP servers only, no route
-to the executor. Approval is bound to the exact draft revision and per-action
-canonical payload hashes, persisted with the execution jobs in one
-transaction. The executor reloads and hash-verifies before running;
-actions are single-use with atomic state transitions and idempotency keys.
+Three independent mechanisms, each tested:
 
-## Key decisions and deviations
+1. **Capability-scoped store handles** — every process opens the store with
+   a role; write methods check the role before touching approvals,
+   execution_jobs, tickets, ticket_notes, outbox tables
+   (`internal/store`, `guardWrite`). Tests prove each prohibition.
+2. **Approval binding** — approval records the exact draft revision +
+   content hash + selected action ids; each action's canonical payload is
+   SHA-256 hashed. Approval re-runs the deterministic verifier first.
+3. **Executor re-validation** — before any write, the executor and the
+   ticket MCP server re-load the persisted approval and re-hash the stored
+   canonical payload (`executor.LoadVerifiedAction`). The ticket tool also
+   performs the atomic `queued → running` action transition, so duplicate
+   or replayed calls collapse to one ticket.
 
-- **Embeddings spike (SPEC §19.1):** the sibling ModelRail codebase exposes
-  no embeddings endpoint (verified by source search). Dense retrieval is
-  therefore **disabled**; Benri ships lexical-only retrieval. RRF helper is
-  present but unused. Recorded in VERIFICATION-REPORT.md.
-- **Tokenizer (SPEC §8.2):** kuromoji was not adopted; the explicitly
-  selected tokenizer is dictionary-free: NFKC + particle-split character
-  bigrams. Retrieval is called **lexical retrieval**, never BM25.
-- **MCP SDK (SPEC §19.3):** minimal smoke test of `@modelcontextprotocol/server`
-  v2.4.0 + `@modelcontextprotocol/client` v2.4.0 over stdio passed in this
-  Node 24 runtime (echo tool listed + called). v2 is used; no v1 fallback
-  needed.
-- **Persistence:** PostgreSQL/Drizzle is the Compose path (unverified here);
-  all business logic runs against repository contracts exercised by the
-  sqlite store in tests, evals, and the live smoke.
-- **Runtime:** processes run TypeScript via `tsx` (no separate build step)
-  in local/dev mode; the web app is a real Next.js production build.
+Ticket-action state is owned by the ticket server; the executor owns only
+`send_demo_reply` transitions.
 
-## Data flow
+## Data path
 
-`POST /inquiries/:id/runs` → agent worker claims (lease) → steps 0–7 with
-checkpoints → draft at `awaiting_review` + deterministic proposed actions →
-operator approves selected actions (one transaction: approval + jobs) →
-executor claims job → ticket MCP / outbox adapter → fixture writes →
-audit events + spans at every transition.
+- **SQLite** (`modernc.org/sqlite`, pure Go) is the locally verified store.
+- **PostgreSQL** path: goose migrations (`db/migrations/`, incl. per-role
+  grants in `00002_role_grants.sql`), sqlc queries (`db/queries/` →
+  `internal/store/dbgen`, generated + committed), pgx/v5 pool handle in
+  `internal/store/pg.go`. **Status: provided, UNVERIFIED** — no PostgreSQL
+  on the build machine; the PgStore method bodies return an explicit
+  unverified error instead of pretending to work.
+
+## Retrieval (§8)
+
+Lexical-only. Kagome v2 tokenization (Search mode) after NFKC
+normalization; IDF-weighted content-coverage scoring with an intent-aware
+gate (thresholds 0.18 / 0.12, carried from v2 calibration). The dictionary
+was chosen by benchmark on the labelled gold corpus: IPA vs UniDic tied on
+Recall@5 (0.9375); IPA won on MRR (0.8958 vs 0.8917) → IPAdic is the
+default; the index version names it: `lexical-v3-kagome-ipa-1.2.6`.
+Dense retrieval is DISABLED: the ModelRail capability spike found no
+embeddings endpoint (chat/completions only). The RRF fusion helper ships
+unused, by design.
+
+## Model gateway (§10.1)
+
+Typed ModelRail client (`internal/modelrail`): timeouts, bounded response
+size, usage parsing, typed `GATEWAY_UNAVAILABLE` failures. Mock mode
+(`MOCK_LLM=1` or no base URL) is deterministic and clearly labelled in
+`/health`, the UI, and every report. The mock responder
+(`internal/agent.MockRespond`) implements the same structured contracts a
+live model would: CLASSIFY → JSON classification, DRAFT → JSON draft with
+citations + factual references.
+
+## Observability (§10.2)
+
+OpenTelemetry Go SDK: root span `benri.run` + child spans per step, W3C
+trace context, async OTLP/HTTP export to Kairo when configured (export
+failure never fails a run), plus an always-on in-memory span recorder for
+tests/local debugging. Span attributes never contain raw inquiry text,
+PII, or full order numbers.
+
+## Web (`web/`)
+
+Next.js operator UI (Japanese-first, EN toggle). Its API types are
+generated from the canonical contract: `openapi-typescript` →
+`web/lib/api/schema.d.ts` (committed). `make generate` regenerates the Go
+server stubs, sqlc output, and TS types; `make generate-check` fails on
+any drift (exercised locally, wired into CI).

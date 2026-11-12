@@ -1,0 +1,39 @@
+# Benri backend — one multi-stage build, per-process runtime stages.
+# STATUS: provided, UNEXECUTED on the build machine (no Docker available).
+# Least-privilege packaging (SPEC §13/§18):
+#   - agent-worker image ships mcp-kb + mcp-crm ONLY (no mcp-ticket binary,
+#     and its Compose env carries no ticket route).
+#   - executor-worker image ships mcp-ticket ONLY.
+#   - api image ships no MCP binaries.
+FROM golang:1.27.4-bookworm AS build
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 go build -trimpath -o /out/ ./cmd/...
+
+FROM gcr.io/distroless/static-debian12:nonroot AS api
+COPY --from=build /out/api /usr/local/bin/api
+COPY fixtures /fixtures
+ENV BENRI_ROOT_DIR=/ BENRI_DB_PATH=/data/benri.sqlite
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/api"]
+
+FROM gcr.io/distroless/static-debian12:nonroot AS agent-worker
+COPY --from=build /out/agent-worker /usr/local/bin/agent-worker
+COPY --from=build /out/mcp-kb /usr/local/bin/mcp-kb
+COPY --from=build /out/mcp-crm /usr/local/bin/mcp-crm
+ENV BENRI_MCP_KB_BIN=/usr/local/bin/mcp-kb BENRI_MCP_CRM_BIN=/usr/local/bin/mcp-crm
+ENTRYPOINT ["/usr/local/bin/agent-worker"]
+
+FROM gcr.io/distroless/static-debian12:nonroot AS executor-worker
+COPY --from=build /out/executor-worker /usr/local/bin/executor-worker
+COPY --from=build /out/mcp-ticket /usr/local/bin/mcp-ticket
+ENV BENRI_MCP_TICKET_BIN=/usr/local/bin/mcp-ticket
+ENTRYPOINT ["/usr/local/bin/executor-worker"]
+
+FROM gcr.io/distroless/static-debian12:nonroot AS mcp-servers
+COPY --from=build /out/mcp-kb /usr/local/bin/mcp-kb
+COPY --from=build /out/mcp-crm /usr/local/bin/mcp-crm
+COPY --from=build /out/mcp-ticket /usr/local/bin/mcp-ticket
+ENTRYPOINT ["/usr/local/bin/mcp-kb"]

@@ -1,93 +1,138 @@
-# Benri Agent
+# Benri Agent (便りエージェント) — v3
 
-Human-in-the-loop AI customer-operations workbench for Japanese inquiries.
-Benri turns Japanese customer inquiries into evidence-backed response drafts
-and explicit action proposals. An authenticated operator reviews the exact
-draft and each proposed action; only then can a separate executor write to
-the demo fixture system. **The model can never execute writes.**
+An approval-gated AI support copilot for Japanese e-commerce support
+teams. The agent classifies a customer inquiry, retrieves grounded
+knowledge-base evidence, checks a deterministic policy layer, drafts a
+Japanese reply, and **proposes** side-effecting actions. Nothing executes
+without a human approving the exact draft revision and the exact action
+payloads; a separate executor then performs only what was approved —
+exactly once.
 
-Spec: [SPEC.md](SPEC.md) (v2.0) · Architecture: [docs/architecture.md](docs/architecture.md) ·
-Threat model: [docs/threat-model.md](docs/threat-model.md) ·
-Eval methodology: [docs/eval-methodology.md](docs/eval-methodology.md) ·
-Runbook: [docs/runbook.md](docs/runbook.md) · Verification: [VERIFICATION-REPORT.md](VERIFICATION-REPORT.md)
+**Stack (v3): Go backend + TypeScript web UI.** The entire backend —
+API, agent worker, executor worker, three MCP servers, eval CLI — is a
+single Go module. TypeScript remains only in `web/` (Next.js operator
+UI). _Honesty note (SPEC §0.2): this project's backend is Go; it is not
+evidence of Node.js backend work. The earlier TypeScript backend (v2)
+exists in git history and in `docs/verification-report-v2.md`._
 
-## Status (honest)
+## Why it exists
 
-- **Locally verified** on the portable `node:sqlite` store with the
-  deterministic mock LLM (`MOCK_LLM=1`): full pipeline, approval/executor
-  boundary, MCP servers over stdio, API, web UI build + runtime, 43 tests,
-  50-case evaluation, and a live process smoke — see VERIFICATION-REPORT.md.
-- **Provided but NOT verified here** (no Docker/PostgreSQL on the build
-  machine): the PostgreSQL/Drizzle path, `docker compose up`, Dockerfiles,
-  and GitHub CI. They are labelled as such wherever they appear.
-- **Not done / not claimed:** live ModelRail inference (client + contract
-  tests exist; no live gateway was run), live Kairo export (OTLP exporter
-  implemented; failure-tested only), dense retrieval (disabled — ModelRail
-  exposes no embeddings endpoint; lexical retrieval only), native Japanese
-  review of fixtures (**not native-reviewed**).
+Support automation fails dangerously when a model can both draft and
+act. Benri splits the two: the model can only draft and propose; humans
+approve; a separate, dumber executor acts. Every step is checkpointed,
+hashed, and auditable, and the whole flow is evaluated against a
+versioned 50-case Japanese gold dataset.
 
-## Measured results (mock LLM, gold set v1.0.0)
+## Measured results (this machine, Go build, mock LLM)
 
-From `evals/reports/latest.md` (denominators included there):
+From `go run ./cmd/eval` — see `evals/reports/latest.md`:
 
-- Classification accuracy 0.98 (49/50), macro-F1 0.9753
-- Escalation precision/recall/F1 = 1 / 1 / 1 (16/16 must-escalate caught, 0 false-safe)
-- Retrieval Recall@5 0.9625, MRR 0.8688 (40 labelled cases)
-- Citation precision 0.6912 / recall 0.9412 (strict single-article gold labels)
-- Safety: agent writes 0, unapproved actions 0, duplicates 0, cross-tenant 0
+| Metric | Value | Denominator |
+|---|---|---|
+| Classification accuracy | 0.98 | 49/50 |
+| Classification macro-F1 | 0.9753 | 9 intents |
+| Escalation precision / recall / F1 | 1.0 / 1.0 / 1.0 | TP=16 FP=0 FN=0 |
+| Retrieval Recall@5 | 0.9625 | 40 labelled cases |
+| Citation precision / recall | 0.7941 / 0.9265 | 34 drafted labelled cases |
+| Verification pass rate | 1.0 | 34 drafted |
+| Forbidden-claim violations | 0 | 50 cases |
+| Safety zeros (agent writes / unapproved / duplicates / cross-tenant) | 0 / 0 / 0 / 0 | eval run |
 
-These are deterministic-mock pipeline measurements, **not** live-model results.
+Kagome dictionary benchmark (§8.2): IPA Recall@5 0.9375 / MRR 0.8958 vs
+UniDic 0.9375 / 0.8917 (40 labelled) → **IPAdic chosen**,
+index version `lexical-v3-kagome-ipa-1.2.6`.
 
-## Quick start
+Go tests: 34/34 pass (`go test ./...`), race detector clean
+(`go test -race ./...`). Live smoke with MCP subprocess gateways:
+**SMOKE OK** (`evals/reports/smoke-transcript.txt`).
+
+These are deterministic **mock-LLM** numbers — they measure the mock
+pipeline against the gold set, not a live model. Japanese fixtures are
+synthetic and **not native-reviewed**.
+
+## Quick start (local, verified path)
+
+Requirements: Go 1.27.4, Node 22 (web only).
 
 ```bash
-npm install
-npm run seed            # fixtures -> ./data/benri.sqlite
-npm run api             # http://localhost:4100
-npm run agent-worker    # add BENRI_USE_MCP=1 to run tools via MCP servers
-npm run executor-worker
-cd apps/web && npm install && npm run build && npm start   # http://localhost:3000
+go build -o bin/ ./cmd/...
+BENRI_DB_PATH=./data/benri.sqlite ./bin/api     # seeds demo data on first boot → :8080
+./bin/agent-worker --once                        # process queued runs
+./bin/executor-worker --once                     # execute approved jobs
+cd web && npm install && npm run dev             # operator UI → :3000
 ```
 
-Windows PowerShell (no `&&`; one command per line):
+Windows PowerShell (no `&&`):
 
 ```powershell
-npm install
-npm run seed
-npm run api
-npm run agent-worker
-npm run executor-worker
-cd apps\web
-npm install
-npm run build
-npm start
+go build -o bin/ ./cmd/...
+$env:BENRI_DB_PATH = "./data/benri.sqlite"
+./bin/api
 ```
 
-Demo credentials (fixture tenant only, documented on purpose):
-operator `operator@hinata.example` / `demo-operator-pass`;
-admin `admin@hinata.example` / `demo-admin-pass`.
+Demo users: `operator@hinata.example` / `demo-operator-pass` ·
+`admin@hinata.example` / `demo-admin-pass` (local demo only).
 
-Demo walkthrough: open the queue, run INQ-006 (invoice), watch the run reach
-`awaiting_review`, inspect evidence + verification, approve both actions,
-then check Tickets and the Outbox — the reply is labelled
-**"Sent in demo outbox — not delivered"** because nothing is ever really sent.
-Open a complaint inquiry to see escalation with an internal handoff summary
-and no customer draft.
+Try the flow: log in → open inquiry INQ-006 (invoice request) → start a
+run → `./bin/agent-worker --once` → review the draft, its citations and
+the two proposed actions → approve → `./bin/executor-worker --once` →
+exactly one ticket and one demo outbox message exist. Re-approving is
+refused (409). A complaint (INQ-014) escalates to a human with a Japanese
+handoff summary and no draft.
+
+## MCP mode
+
+Workers use the same tool logic in-process by default. Set
+`BENRI_USE_MCP=1` to route through the real MCP server binaries over
+stdio (official MCP Go SDK, negotiated protocol 2026-07-28):
+
+```bash
+export BENRI_USE_MCP=1
+export BENRI_MCP_KB_BIN=./bin/mcp-kb BENRI_MCP_CRM_BIN=./bin/mcp-crm BENRI_MCP_TICKET_BIN=./bin/mcp-ticket
+```
+
+The agent worker can only reach the KB/CRM servers; only the executor
+spawns the ticket server; tenant context is bound at server launch.
+
+## Evaluation & smoke
+
+```bash
+make eval        # dictionary benchmark + 50-case gold run → evals/reports/
+make smoke       # binaries + MCP end-to-end → SMOKE OK
+make test        # go test ./...
+make generate    # regenerate OpenAPI (Go/TS) + sqlc outputs
+make generate-check   # drift check (fails on any generated-file drift)
+```
 
 ## Layout
 
-`apps/` api · web · agent-worker · executor-worker ·
-`packages/` agent-core · retrieval · mcp-kb · mcp-crm · mcp-ticket · db ·
-observability · modelrail-client · japanese-quality ·
-`evals/` dataset (50 gold cases) · runner · judges · reports ·
-`fixtures/` kb (20 articles) · crm (10 customers/orders) · inquiries (30)
+```
+cmd/{api,agent-worker,executor-worker,mcp-kb,mcp-crm,mcp-ticket,eval,smoke}
+internal/{api,auth,agent,approval,executor,jobs,modelrail,mcpclient,
+          mcpserver,retrieval,verify,japanese,observability,config,
+          domain,store,seed,proc,testutil}
+api/openapi.yaml            canonical HTTP contract
+db/{migrations,queries}     goose migrations (+ role grants), sqlc queries
+web/                        Next.js operator UI (generated API types)
+fixtures/ evals/            synthetic demo data + versioned gold dataset
+docs/                       architecture, threat model, eval methodology, runbook
+```
 
-## Limitations
+## PostgreSQL / Docker (provided, unverified here)
 
-- Fixture data is synthetic and fictional (Hinata Store); no real customer
-  data, no real channels (no email/LINE), no real payments/refunds.
-- The verifier checks citations, structured facts, numbers/dates and style
-  mechanically; it does not prove semantic entailment. Human review is
-  mandatory by design.
-- Japanese content is **not native-reviewed**.
-- PII redaction is a limited pattern detector for common Japanese formats.
+`docker-compose.yml` + `Dockerfile.backend` / `Dockerfile.web` run the
+PostgreSQL path with per-role database users; goose migrations and sqlc
+queries are in `db/`. The agent-worker image ships no ticket binary; the
+executor image ships no ModelRail key. **No Docker or PostgreSQL exists
+on the build machine, so this path is provided but unverified** — the
+locally verified store is SQLite (pure-Go driver). Details and the full
+item-by-item status: `VERIFICATION-REPORT.md`.
+
+## Docs
+
+- `docs/architecture.md` — processes, trust boundary, data path
+- `docs/threat-model.md` — threats, controls, known limits
+- `docs/eval-methodology.md` — dataset, metrics, gates, negative controls
+- `docs/runbook.md` — operations and failure handling
+- `SPEC.md` — the build specification (v3.0)
+- `AGENT-LOG.md` — coding-agent session log, corrections included

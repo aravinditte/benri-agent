@@ -1,6 +1,6 @@
-# Benri Agent — Revised Build Specification
+# Benri Agent — Build Specification (Go + TypeScript)
 
-**Version:** 2.0  
+**Version:** 3.0  
 **Revision date:** 2026-11-12  
 **Owner:** Itte Aravind  
 **Repository:** `benri-agent`  
@@ -9,41 +9,68 @@
 
 > **One-line product definition:** Benri turns Japanese customer inquiries into evidence-backed response drafts and explicit action proposals. An authenticated operator reviews the exact content and actions before a separate executor can write anything to the demo system.
 
-This document replaces v1. It is a buildable engineering specification, not a claim that the system has already been implemented or deployed. All performance, quality, cost, and reliability numbers must be measured before publication.
+This document supersedes v1 and v2. It is a buildable engineering specification, not a claim that the system has already been implemented or deployed. All performance, quality, cost, and reliability numbers must be measured before publication.
 
 ---
 
 ## 0. Executive recommendation
 
-**Keep the project and the TypeScript/Node direction. Rebuild the trust boundary and reduce the v1 scope.** The product idea is credible, the Japanese workflow gives it a concrete domain, and the integration story across ModelRail and Kairo is a useful portfolio advantage. The strongest part is not the chatbot: it is the deterministic agent runtime, constrained retrieval, explicit human approval, recoverable execution, and evaluation system.
+**Use Go for the entire backend and TypeScript for the web application.** Do not use Node.js for the API or workers, and do not introduce Python or Rust services in v1.
 
-The v1 document had several design problems that should be corrected before implementation:
+The selected split is deliberate:
 
-| V1 issue | V2 decision |
+- **Go:** API, agent runtime, background workers, MCP clients/servers, Japanese text normalization/tokenization, retrieval orchestration, evaluation runner, and OpenTelemetry instrumentation.
+- **TypeScript:** Next.js operator UI, browser-side interaction, and generated API client/types.
+- **PostgreSQL:** system of record, job leasing, checkpoints, approvals, idempotency, audit, lexical retrieval, and optional pgvector storage.
+
+This is not a claim that Go is universally faster than TypeScript or Python. Benri is dominated by network-bound model/tool/database operations, so raw language speed is not the decisive factor. Go is selected for the backend because it provides a compact deployment model, explicit cancellation/deadlines, bounded worker concurrency, a mature HTTP/database ecosystem, and an official MCP SDK. The Go-native Kagome tokenizer also allows Japanese lexical processing without introducing a Python sidecar.
+
+TypeScript remains in the frontend because Next.js is a strong fit for the operator dashboard and generated API types keep the browser contract synchronized with the Go service.
+
+### 0.1 Why Go + TypeScript instead of a single language
+
+| Decision | Reason |
 |---|---|
-| The agent worker and execution path were not separated strongly enough. A token check alone is not a sufficient security boundary. | Separate the read-only agent worker from the privileged executor. Approval creates a transactionally persisted, payload-specific action record. |
-| Complaint handling conflicted: some sections said draft then escalate; acceptance criteria required no draft. | In v1, complaints are human-led. Produce an internal handoff summary, not a customer-facing draft. |
-| The spec called PostgreSQL `tsvector` search “BM25”. | Call it lexical full-text retrieval. Use `ts_rank`/`ts_rank_cd` plus dense retrieval and rank fusion. Do not call it BM25 unless BM25 scoring is actually implemented. |
-| “Every factual claim is verified” overstated what deterministic checks can prove. | Deterministically verify citations, structured facts, dates, numbers, and policy-sensitive fields. State clearly that this does not prove all semantic entailment. Human review remains mandatory. |
-| A `です・ます` linter was treated as a guarantee of natural business Japanese. | Mechanical style checks catch obvious violations; human/Japanese-quality review and a calibrated judge assess naturalness and appropriateness. |
-| The schema suggested PII could be redacted before storage while also retaining the original body. | Persist only a redacted body for normal operation. No real customer data or real email integration in v1. Fixture identifiers are synthetic. |
-| Worker restart recovery was described as re-queueing stale jobs, which can duplicate execution. | Use leases, checkpoints, idempotency keys, and explicit `unknown` outcomes for uncertain side effects. Never blindly retry an ambiguous write. |
-| The embedding dimension and embedding path were assumed. ModelRail’s chat-completions support does not automatically imply an embeddings endpoint. | Verify the ModelRail embeddings contract before enabling dense retrieval. Keep the embedding provider explicit and testable. |
-| The three-week part-time plan attempted product, MCP, security, evals, deployment, and launch content at once. | Deliver in capability gates. Treat public deployment and launch writing as later milestones, not as prerequisites for a functioning core. |
-| The project was positioned as direct evidence of a coding-agent harness. | Be precise: Benri demonstrates an application-agent runtime and evaluation engineering, plus serious Claude Code usage. It does not, by itself, implement a general coding-agent platform. |
+| Go backend | Backend reliability, bounded concurrency, straightforward deployment, explicit process boundaries, official MCP support. |
+| TypeScript frontend | Next.js ecosystem, rapid operator-UI development, browser-native language, generated API types. |
+| One OpenAPI contract | Prevents hand-maintained Go and TypeScript DTOs from drifting. |
+| No Python service in v1 | Benri calls ModelRail for inference; it does not train models. Go can run the required orchestration and Kagome-based Japanese tokenization. |
+| No Rust service in v1 | No measured CPU or memory bottleneck currently justifies a second systems language and an additional service boundary. |
+| No Node backend in v1 | Avoids operating two backend runtimes and makes Go the primary backend engineering signal. |
+
+### 0.2 Trade-off against the hiring targets
+
+The choice sacrifices a direct TypeScript/Node.js backend match for Cogent Labs. The project should not hide that trade-off or claim Node.js backend experience from this implementation. TypeScript remains visible in the Next.js application, while the stronger evidence becomes the application-agent harness, MCP integration, security boundaries, evaluation methodology, coding-agent workflow, and production-oriented Go backend. If a specific vacancy makes Node.js a hard requirement, demonstrate that requirement through separate, genuine Node.js work rather than changing Benri's architecture solely for keywords.
+
+### 0.3 V2 design corrections retained
+
+The following v2 decisions remain binding:
+
+| V1 issue | V3 decision |
+|---|---|
+| Agent worker and execution path were not separated strongly enough. | Separate the read-only Go agent worker from the privileged Go executor. Approval creates transactionally persisted, payload-specific action records. |
+| Complaint handling conflicted. | Complaints are human-led in v1: internal handoff summary, no customer-facing draft. |
+| PostgreSQL `tsvector` was incorrectly called BM25. | Use lexical full-text retrieval with `ts_rank`/`ts_rank_cd`; call it lexical retrieval, not BM25. |
+| Factual verification was overstated. | Deterministically verify structured facts and policy-sensitive values; do not claim complete semantic entailment. |
+| A `です・ます` linter was treated as a guarantee of natural Japanese. | Mechanical checks catch basic violations; linguistic quality requires human review and calibrated evaluation. |
+| PII redaction and original-body retention were contradictory. | Persist only redacted content in normal application tables. Use synthetic fixtures only. |
+| Stale jobs could be blindly re-queued. | Use leases, checkpoints, idempotency, and `unknown` outcomes for ambiguous side effects. |
+| ModelRail chat support was assumed to imply embeddings support. | Verify the embedding contract before enabling dense retrieval. |
+| Three-week plan was too aggressive. | Deliver in capability gates; deploy and publish after the core is reliable. |
+| The product was described as a coding-agent platform. | Benri is an application-agent runtime. `AGENT-LOG.md` documents the coding-agent workflow used to build it. |
 
 ### Product and portfolio thesis
 
 Benri should tell one coherent story:
 
-1. A real operational problem with a narrowly defined workflow.
-2. A bounded agent runtime that can reason and retrieve but cannot perform writes.
+1. A narrow Japanese customer-operations problem.
+2. A bounded Go agent runtime that can reason, retrieve, create drafts and checkpoints, but cannot perform privileged business-action writes.
 3. A separate, audited approval-and-execution path.
-4. Japanese-language retrieval and response evaluation.
+4. Japanese-language retrieval and response evaluation using a tokenizer that can run inside the Go backend.
 5. Measured behavior under normal, ambiguous, adversarial, and degraded conditions.
 6. Production-oriented operations through ModelRail and Kairo.
 
-Do not turn v1 into a multi-channel customer-service platform. The quality of the harness and evidence is more valuable than adding email, LINE, payments, or multiple agents.
+Do not turn v3 into a multi-channel customer-service platform. The quality of the harness and evidence is more valuable than adding email, LINE, payments, or multiple agents.
 
 ---
 
@@ -135,6 +162,8 @@ A v1 release is complete when all required items below are demonstrated from a c
 14. A 50-case evaluation report is generated in JSON and Markdown. The report includes denominators and model/prompt/index versions.
 15. Public demo, if deployed, is fixture-only and mock-LLM-only. It does not accept arbitrary public submissions or invoke paid model APIs.
 16. README documents the actual deployment state, limitations, demo credentials/policy, and measured results. No unmeasured metrics appear in marketing or CV copy.
+17. Backend CI runs `gofmt` validation, `go vet ./...`, `go test ./...`, and `go test -race ./...` where supported; frontend CI runs TypeScript type-checking, linting, and UI tests.
+18. API contract types are generated from the canonical OpenAPI document for both Go and TypeScript; generated files are reproducible and checked for drift.
 
 ---
 
@@ -142,64 +171,83 @@ A v1 release is complete when all required items below are demonstrated from a c
 
 ### 3.1 Technology choices
 
-- **Language/runtime:** TypeScript on a pinned Node.js LTS release.
-- **API:** Fastify.
-- **Web:** Next.js.
-- **Database:** PostgreSQL; `pgvector` for dense retrieval when the embedding contract is verified.
-- **ORM/migrations:** Drizzle ORM + Drizzle Kit.
-- **MCP:** official MCP TypeScript SDK. At the 2026-11-12 revision date, use the v2 split packages (`@modelcontextprotocol/server` and `@modelcontextprotocol/client`) after a minimal transport/interop smoke test; do not accidentally copy v1 imports from older examples.
-- **Validation:** Zod v4 or another Standard Schema-compatible validator, consistently applied at API, worker, and tool boundaries.
-- **Telemetry:** OpenTelemetry JS, OTLP/HTTP exporter to Kairo.
-- **Inference:** ModelRail OpenAI-compatible API for chat/completion calls.
-- **Tests:** Vitest, PostgreSQL integration tests, and deterministic mock-model fixtures.
-- **Local runtime:** Docker Compose.
+| Layer | Selection | Rationale / constraints |
+|---|---|---|
+| Backend language | Go; pin the current supported stable toolchain | Primary language for API, workers, MCP, retrieval, evaluation, and telemetry. Use the exact toolchain in CI and Docker. At this revision date the release history lists Go 1.27.4; update to the latest security patch when implementation begins. |
+| HTTP API | Go `net/http` + `chi` | `chi` is a small, composable router built on the standard `net/http` interfaces. Keep handlers thin; business logic belongs in services. |
+| Web UI | Next.js + TypeScript | Operator queue, draft review, admin, audit and evaluation screens. |
+| API contract | OpenAPI 3.1 + `oapi-codegen` + `openapi-typescript` | `api/openapi.yaml` is canonical. Generate Go server/model types and TypeScript client/types from it. Use `openapi-fetch` or a small generated-client wrapper in the UI. Do not hand-maintain two independent API contracts. |
+| PostgreSQL access | `pgx/v5` + `sqlc` | Explicit SQL and generated typed query methods; no runtime ORM. `pgx` is the PostgreSQL driver/toolkit and `sqlc` generates Go code from SQL. |
+| Migrations | `goose` | Versioned SQL migrations; migrations run as a dedicated deployment step, not from every API replica. |
+| MCP | Official Go SDK: `github.com/modelcontextprotocol/go-sdk/mcp` | Use the official client/server APIs and stdio transport for local child processes. Pin a release compatible with the required MCP protocol revision; the SDK README documents the 2026-07-28 protocol in v1.7.0+. Run protocol/interop smoke tests. |
+| Japanese tokenizer | Kagome v2 (`github.com/ikawaha/kagome/v2`) | Pure Go morphological analyzer with IPA/UniDic dictionaries and search segmentation. Evaluate IPA vs UniDic on Benri's fixtures before choosing one. |
+| Text normalization | `golang.org/x/text/unicode/norm` | NFKC normalization before PII pattern matching and lexical tokenization. |
+| Lexical retrieval | PostgreSQL FTS + Kagome-tokenized text | Store tokenized text; use `ts_rank`/`ts_rank_cd` with a GIN index. This is lexical full-text retrieval, not BM25. |
+| Dense retrieval | PostgreSQL + pgvector, optional | Enable only after verifying ModelRail embeddings or explicitly selecting a separate embedding provider. |
+| LLM client | Small typed Go HTTP client using `net/http` | ModelRail is OpenAI-compatible. Keep the integration contract explicit; do not assume every OpenAI endpoint or field is supported. |
+| Telemetry | OpenTelemetry Go SDK + OTLP/HTTP exporter | Trace API, worker, MCP, retrieval and executor activity into Kairo. Telemetry must not block core work. |
+| Backend tests | Go `testing`, `httptest`, PostgreSQL integration tests | Add Testcontainers only if it simplifies isolated integration testing; a CI PostgreSQL service is sufficient. |
+| Frontend tests | TypeScript type-check, lint, and UI tests (Vitest/Playwright as appropriate) | UI tests do not replace Go API and authorization tests. |
+| Local runtime | Docker Compose | API, web, PostgreSQL, agent worker and executor; mock mode by default. |
 
-Do not add Redis, Kafka, a separate queue product, or a workflow engine in v1. PostgreSQL-backed jobs are adequate at this workload, provided leasing and idempotency are implemented correctly.
+**Do not add** Redis, Kafka, a separate queue product, or a workflow engine in v1. PostgreSQL-backed jobs are adequate at this workload if leasing, checkpointing and idempotency are implemented correctly.
+
+#### Go engineering conventions
+
+- Use a single Go module initially; do not create multiple modules without a concrete release or dependency boundary.
+- Put executable entry points under `cmd/`; keep application code under `internal/`.
+- Pass `context.Context` explicitly to operations that can block; propagate cancellation and deadlines through HTTP, database and MCP calls.
+- Bound worker concurrency with a fixed worker pool or semaphore. Do not spawn unbounded goroutines for queued jobs.
+- Use `http.Client` instances with explicit connect, response-header and total request timeouts; reuse transports.
+- Use graceful shutdown, structured logs, typed error codes and explicit retry classification.
+- Prefer generated `sqlc` query code over a generic repository abstraction that hides SQL behavior.
+- Keep generated code out of manual edits; regenerate from the canonical sources.
 
 ### 3.2 Component diagram
 
 ```text
-                         benri-agent
-┌──────────────────────────────────────────────────────────────────────┐
-│ Browser                                                              │
-│   │                                                                  │
-│   ▼                                                                  │
-│ Next.js UI ───────────────► Fastify API                              │
-│ Queue / review / audit       Auth, tenant scope, approval endpoint   │
-│                             │                    │                   │
-│                             ▼                    ▼                   │
-│                     PostgreSQL             Approval transaction    │
-│              inquiries / KB / runs          approvals / proposed_actions │
-│              steps / drafts / audit         execution_jobs           │
-│                       ▲                           │                  │
-│                       │                           ▼                  │
-│                Agent worker                 Executor worker           │
-│                read-only role               privileged role           │
-│                  │      │                         │                   │
-│                  ▼      ▼                         ▼                   │
-│               KB MCP  CRM MCP                 Ticket MCP              │
-│               read    read                    write-only              │
-│                  │                              │                    │
-│                  └────► ModelRail                └──► fixture DB       │
-│                         chat/completions                             │
-│                                                                      │
-│  Agent/API/Executor ── OpenTelemetry ──► Kairo (optional external)   │
-└──────────────────────────────────────────────────────────────────────┘
+                              benri-agent
+┌────────────────────────────────────────────────────────────────────────────┐
+│ Browser                                                                    │
+│   │                                                                        │
+│   ▼                                                                        │
+│ Next.js UI (TypeScript) ───────► Go API (`net/http` + chi)                 │
+│ Queue / review / audit             Auth, tenant scope, approval transaction│
+│                                      │                    │                │
+│                                      ▼                    ▼                │
+│                              PostgreSQL             Approval transaction   │
+│                         inquiries / KB / runs        approvals / actions   │
+│                         steps / drafts / audit        execution_jobs       │
+│                                 ▲                          │               │
+│                                 │                          ▼               │
+│                         Go agent-worker             Go executor-worker     │
+│                         constrained role             privileged role       │
+│                           │       │                        │               │
+│                           ▼       ▼                        ▼               │
+│                        KB MCP   CRM MCP                Ticket MCP          │
+│                        read     read                   write-only          │
+│                           │                              │                 │
+│                           └────► ModelRail                └──► fixture DB   │
+│                                  chat/completions                         │
+│                                                                            │
+│  Go API / workers / MCP ── OpenTelemetry ──► Kairo (optional external)     │
+└────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 3.3 Process and permission boundaries
 
-- `api`: authenticates users, authorizes tenant-scoped requests, owns draft approval, and writes approved action records. It does not run model reasoning.
-- `agent-worker`: claims agent runs, performs classification/retrieval/drafting/verification, and persists checkpoints. Its database role cannot write to `tickets` or `outbox_messages`. It starts only read-only KB and CRM MCP servers.
-- `executor-worker`: claims approved action jobs and invokes the write-only ticket MCP server. It cannot call the LLM and does not accept instructions or tool arguments from a model.
-- MCP servers are small domain packages launched locally over stdio by the authorized host process in v1. Do not expose them as unauthenticated network services. If a later deployment requires Streamable HTTP, add authentication, origin/host validation, and an explicit service-to-service trust model first.
+- `api` (Go): authenticates users, authorizes tenant-scoped requests, owns draft approval, and transactionally changes selected proposals to approved while inserting execution jobs. It does not run model reasoning and cannot write tickets/outbox messages.
+- `agent-worker` (Go): claims agent runs, performs classification/retrieval/drafting/verification, and persists checkpoints. It may create `proposed` action records, but cannot approve them, enqueue execution jobs, or write to `tickets`/`outbox_messages`. It starts only read-only KB and CRM MCP child processes.
+- `executor-worker` (Go): claims approved action jobs and invokes the write-only ticket MCP child process. It has no ModelRail credential, does not instantiate an LLM client, and accepts no model-generated action arguments.
+- `mcp-kb`, `mcp-crm`, and `mcp-ticket` are Go executables using the official Go MCP SDK over stdio. The agent-worker image contains only the read-only MCP executables; the executor image contains only the ticket MCP executable. Give each MCP process its own least-privilege database credential. Do not expose MCP servers as unauthenticated network services. If a later deployment requires Streamable HTTP, define authentication, origin/host validation, and service-to-service authorization first.
+- `web` is a TypeScript/Next.js process and never receives database or ModelRail credentials.
 - PostgreSQL is the source of truth for state, checkpoints, approvals, idempotency, and audit records.
 
-The key invariant is structural: **the process that interprets untrusted customer text has no write capability.** A prompt rule is not a security boundary.
+The key invariant is structural: **the process that interprets untrusted customer text can write only its own run/checkpoint/draft/proposal records; it cannot approve proposals, enqueue execution jobs, create tickets, or write to the outbox.** A prompt rule is not a security boundary.
 
 ### 3.4 Job claiming and recovery
 
-Use PostgreSQL row locking with `FOR UPDATE SKIP LOCKED` for both agent runs and execution jobs.
+Use PostgreSQL row locking with `FOR UPDATE SKIP LOCKED` for both agent runs and execution jobs. Go workers claim jobs through a bounded worker pool; the pool size is configuration, and each active job receives a cancellable context with a hard deadline.
 
 Each claimed job has:
 
@@ -426,11 +474,15 @@ Only active articles are eligible for retrieval. If policies are superseded, ret
 
 ### 8.2 Japanese text normalization and lexical retrieval
 
-- Normalize query and document text using NFKC.
-- Tokenize Japanese text with kuromoji (or another explicitly selected tokenizer) before indexing.
-- Store the tokenized representation in a PostgreSQL full-text-search column with a GIN index.
+- Normalize query and document text using Unicode NFKC via `golang.org/x/text/unicode/norm`.
+- Tokenize Japanese text with Kagome v2 in **search** segmentation mode initially. Kagome is a pure-Go morphological analyzer with embedded IPA and UniDic dictionaries; it can run inside the Go worker without a separate tokenizer service.
+- Evaluate the IPA and UniDic dictionary options against the actual Benri corpus. Pick one based on Recall@5/MRR and manual inspection; document the dictionary/version because dictionary changes can alter the index.
+- Store both normalized source text and the space-delimited token sequence. Use the token sequence to populate a PostgreSQL `tsvector` column with the `simple` configuration and a GIN index.
 - Use PostgreSQL full-text ranking (`ts_rank`/`ts_rank_cd`) and refer to it as **lexical retrieval**, not BM25.
-- Do not describe `tsvector` as BM25. If true BM25 is later required, implement and benchmark a real BM25 scorer or use a search engine that provides it.
+- Include fixtures for kanji compounds, kana, full-width/half-width variants, product names, model numbers, typos, and mixed Japanese/English text.
+- Do not describe `tsvector` as BM25. If true BM25 is later required, implement and benchmark an actual BM25 scorer or use a search engine that provides it.
+
+The first implementation should be a Go package with a small tokenizer interface. This keeps Kagome replaceable if evaluation shows that another tokenizer or an external search service produces materially better Japanese retrieval.
 
 ### 8.3 Dense retrieval and hybrid ranking
 
@@ -460,18 +512,22 @@ When evidence is insufficient, escalate. Never fill gaps with general model know
 
 The model returns a schema similar to:
 
-```ts
-type DraftOutput = {
-  body: string;
-  citedArticleIds: string[];
-  factualReferences: Array<{
-    factKey: string;
-    normalizedValue: string;
-    sourceArticleId: string;
-    sourceChunkId: string;
-  }>;
-};
+```go
+type DraftOutput struct {
+    Body              string            `json:"body"`
+    CitedArticleIDs   []string          `json:"citedArticleIds"`
+    FactualReferences []FactualReference `json:"factualReferences"`
+}
+
+type FactualReference struct {
+    FactKey        string `json:"factKey"`
+    NormalizedValue string `json:"normalizedValue"`
+    SourceArticleID string `json:"sourceArticleId"`
+    SourceChunkID   string `json:"sourceChunkId"`
+}
 ```
+
+Treat the snippet as a contract illustration, not generated production code. The canonical field definitions belong in the model-output JSON Schema and are validated in Go before persistence.
 
 The model output contains no action proposal and no tool-call arguments. After the draft passes verification, the deterministic policy engine creates an operator-visible list of allowed actions (for example, `create_ticket` or `send_demo_reply`). The operator selects each action explicitly. The model cannot choose, parameterize, or execute actions.
 
@@ -501,7 +557,7 @@ Before publishing the demo:
 
 ## 9. Data model
 
-Every business-owned row carries `tenant_id`. The demo seeds at least two synthetic tenants so isolation can be tested rather than merely asserted.
+Every business-owned row carries `tenant_id`. The demo seeds at least two synthetic tenants so isolation can be tested rather than merely asserted. Go accesses PostgreSQL through `pgx/v5`; `sqlc` generates typed query methods from reviewed SQL in `db/queries/`. Migrations are plain, versioned SQL. Do not add a runtime ORM.
 
 Core tables:
 
@@ -531,8 +587,11 @@ Core tables:
 - Unique `(draft_id, revision)`.
 - Approval foreign key binds to a single draft revision/hash.
 - Agent-worker database role has no insert/update/delete permission on tickets or outbox tables.
-- Executor database role has only the minimum permissions needed to claim jobs and perform approved fixture actions.
-- All repository access requires an authenticated tenant context. Add row-level security if it can be implemented and tested cleanly; regardless, include cross-tenant integration tests at the repository/database boundary.
+- API database role can manage users/sessions, inquiry and draft review state, approvals, proposed-action approval state, execution-job insertion, and audit events; it cannot write tickets or outbox messages.
+- Agent-worker database role can read inquiry/KB/CRM data and write run/checkpoint/draft/proposed-action records; it cannot approve proposals, enqueue execution jobs, or write tickets/outbox messages.
+- Executor-worker database role can claim/update execution jobs and insert fixture outbox records; it cannot write tickets directly.
+- KB/CRM MCP roles are read-only for their respective tables. Ticket MCP can read approval/action records and insert tickets only after validating the persisted approval and payload hash.
+- All repository access requires an authenticated tenant context. Add row-level security if it can be implemented and tested cleanly; regardless, include cross-tenant integration tests at the repository/database boundary. Generated `sqlc` code does not replace authorization checks: every query that touches tenant-owned data must take tenant context explicitly.
 
 Do not store raw message content in audit events, tool arguments, or traces.
 
@@ -553,9 +612,9 @@ Do not store raw message content in audit events, tool arguments, or traces.
 
 ### 10.2 Kairo — tracing and observability
 
-- Use OpenTelemetry JS with one root span per run: `benri.run`.
-- Child spans: `classify`, `retrieve`, `lookup_order`, `policy_decision`, `draft`, `verify`, and each MCP call.
-- Propagate trace context across API, worker, and executor boundaries where supported.
+- Use the OpenTelemetry Go SDK with one root span per run: `benri.run`.
+- Child spans: `classify`, `retrieve`, `lookup_order`, `policy_decision`, `draft`, `verify`, each MCP call, and executor actions.
+- Propagate W3C trace context across API, worker, MCP child-process and executor boundaries. Persist trace/span IDs with run-step and tool-call records.
 - Store the trace ID on the run and render a `View trace` link only when a configured Kairo base URL is available.
 - Never attach raw inquiry text, email, phone, address, order number, or full prompts as span attributes.
 - Export asynchronously. Kairo being down must not block or fail a run.
@@ -574,7 +633,7 @@ Do not store raw message content in audit events, tool arguments, or traces.
 
 ## 11. Evaluation and regression harness
 
-The evaluation harness is a first-class deliverable. Keep it independent from the web UI so it can run locally and in CI.
+The evaluation harness is a first-class deliverable. Implement the runner as a Go CLI under `cmd/eval` so it exercises the same production Go packages as the API and workers. Keep it independent from the web UI so it can run locally and in CI. Dataset authoring and report review remain language-neutral JSONL/JSON/Markdown.
 
 ### 11.1 Gold dataset
 
@@ -640,7 +699,7 @@ Do not put hidden personal/customer data in the dataset. Keep the cases syntheti
 
 CI uses deterministic mocks and should be reproducible. Recommended initial gates:
 
-- no unapproved write attempt, no agent-worker write capability, no cross-tenant access, and no duplicate action — hard zero-tolerance gates
+- no unapproved privileged write attempt, no agent-worker ticket/outbox write, no cross-tenant access, and no duplicate action — hard zero-tolerance gates
 - escalation recall target at least 0.90; with eight must-escalate examples, the report must show the actual count (for example, 8/8), not only a rounded percentage
 - intent accuracy/macro-F1 target initially 0.85, reviewed against the observed confusion matrix
 - retrieval Recall@5 target initially 0.90 on labelled retrieval cases
@@ -677,6 +736,8 @@ The report should show which metrics degrade and why. A no-retrieval run should 
 
 ### 12.1 API endpoints
 
+The Go API owns authentication, authorization, validation, rate limits, idempotency, and all authoritative business rules. Next.js client-side checks are for usability only and are never security controls. Generate the Go transport/models and TypeScript client from `api/openapi.yaml`; CI checks that regeneration produces no diff.
+
 Authentication:
 
 - `POST /auth/login`
@@ -710,7 +771,7 @@ Operations:
 - `GET /audit?entity_type=&entity_id=`
 - `GET /health`
 
-All endpoints are tenant-scoped and return stable error codes. Mutating endpoints accept idempotency keys where retry is possible.
+All endpoints are implemented by the Go API, are tenant-scoped, and return stable error codes. `api/openapi.yaml` is the source of truth; generate Go request/response types and TypeScript client/types from it. Mutating endpoints accept idempotency keys where retry is possible.
 
 ### 12.2 UI screens
 
@@ -722,33 +783,55 @@ Keep the operator UI dense and functional rather than promotional.
 4. **Escalations:** Japanese handoff summary, reason code, evidence inspected, close/assign action.
 5. **Admin:** KB editor/reindex, evaluation reports, audit viewer.
 
-Japanese is the default UI language; English is an operator-facing toggle. Do not translate customer Japanese source text automatically in the initial product workflow.
+Japanese is the default UI language; English is an operator-facing toggle. The UI is TypeScript/Next.js and calls only the Go API through the generated client. Do not translate customer Japanese source text automatically in the initial product workflow.
 
 ---
 
 ## 13. Repository layout
 
+Use one Go module for backend code and a separate `web/` Node package for the Next.js UI. This keeps the Go dependency graph simple while allowing the frontend to use its native toolchain.
+
 ```text
 benri-agent/
-  apps/
-    api/                 # Fastify API, auth, tenant context, approval transaction
-    web/                 # Next.js operator UI
-    agent-worker/        # read-only agent runtime and checkpoint recovery
-    executor-worker/     # approved action executor; no LLM client
-  packages/
-    agent-core/          # pipeline, policies, state machine, schemas
-    retrieval/           # kuromoji normalization, lexical/dense ranking, RRF
-    mcp-kb/              # read-only KB MCP server
-    mcp-crm/             # read-only order/CRM MCP server
-    mcp-ticket/          # executor-only write MCP server
-    db/                  # Drizzle schema, migrations, repository contracts
-    observability/       # OTel setup and trace helpers
-    modelrail-client/    # gateway client, budgets, usage parsing
-    japanese-quality/    # deterministic format/register checks
+  cmd/
+    api/                 # Go HTTP API entry point
+    agent-worker/        # Go write-isolated agent runtime and checkpoint recovery
+    executor-worker/     # Go approved-action executor; no LLM client
+    mcp-kb/              # Go read-only KB MCP server (stdio)
+    mcp-crm/             # Go read-only CRM/order MCP server (stdio)
+    mcp-ticket/          # Go executor-only write MCP server (stdio)
+    eval/                # Go evaluation CLI
+  internal/
+    api/                 # chi routes, middleware, handlers
+    auth/                # sessions, password verification, role checks
+    agent/               # bounded pipeline, prompts, policy and state machine
+    approval/            # revision/action hashes and approval transaction
+    executor/            # execution orchestration and idempotency
+    jobs/                # PostgreSQL leases, worker pool and heartbeat logic
+    modelrail/           # typed ModelRail HTTP client, budgets and usage parsing
+    mcpclient/           # MCP client lifecycle and typed tool adapters
+    retrieval/            # NFKC, Kagome tokenizer, lexical/dense ranking, RRF
+    verify/              # schema, citation, factual-reference and style checks
+    japanese/            # tokenizer adapter and mechanical Japanese checks
+    observability/       # OpenTelemetry setup, propagation and safe attributes
+    config/              # startup configuration validation
+    domain/              # domain types and stable error codes
+    store/               # pgx repositories and transaction boundaries
+  db/
+    migrations/          # versioned SQL migrations
+    queries/             # reviewed SQL consumed by sqlc
+    sqlc.yaml
+  api/
+    openapi.yaml         # canonical API contract
+  web/
+    app/                 # Next.js App Router
+    components/
+    lib/api/             # generated TypeScript client and API types
+    package.json
+    tsconfig.json
   evals/
-    dataset/
-    runner/
-    judges/
+    dataset/             # versioned JSONL gold cases
+    rubrics/
     reports/
   fixtures/
     inquiries/
@@ -759,14 +842,40 @@ benri-agent/
     threat-model.md
     eval-methodology.md
     runbook.md
+  go.mod
+  go.sum
+  Makefile
+  Dockerfile.backend
+  Dockerfile.web
+  docker-compose.yml
   CLAUDE.md
   AGENT-LOG.md
   README.md
-  docker-compose.yml
-  pnpm-workspace.yaml
 ```
 
-Do not create a package merely to make the repository look like a microservice architecture. Each package must have a narrow contract and a testable reason to exist.
+The Docker build may produce separate API, agent-worker, and executor images from the same Go module. The agent-worker image must not contain the write-capable `mcp-ticket` executable. The executor image must not contain the ModelRail API key or an LLM client configuration. MCP child processes receive only their own least-privilege database credentials.
+
+Do not create a package or executable merely to make the repository look like a microservice architecture. Each process and package must have a narrow contract and a security or operational reason to exist.
+
+### 13.1 Required developer commands
+
+Expose stable commands through a root `Makefile` (the exact recipes may evolve, but the semantics should not):
+
+```make
+make dev                 # start PostgreSQL + Go services + Next.js UI
+make up                  # docker compose up --build
+make down                # stop local stack
+make migrate             # apply versioned SQL migrations
+make seed                # load synthetic fixtures
+make generate            # run sqlc and OpenAPI generators
+make test                # Go unit/integration suite + frontend tests
+make test-race           # Go race detector suite where supported
+make lint                # gofmt check, go vet, golangci-lint, frontend lint
+make eval                # run Go evaluation CLI against the 50-case dataset
+make eval-report         # emit JSON and Markdown reports
+```
+
+If a command is not implemented, do not leave a stub that reports success. Document its actual status in the README.
 
 ---
 
@@ -777,8 +886,10 @@ This section produces credible evidence of how the project was built. It must re
 ### 14.1 Claude Code workflow
 
 - Use Claude Code as the primary coding assistant for the repository.
-- Keep `CLAUDE.md` specific: architecture boundaries, commands, test policy, package ownership, security invariants, and rules against unmeasured claims.
+- Keep `CLAUDE.md` specific: Go package boundaries, TypeScript UI boundaries, OpenAPI generation, commands, test policy, security invariants, and rules against unmeasured claims.
 - Work in small issue-sized tasks. Review the complete diff, run relevant tests, and commit only after verification.
+- For Go changes, require `gofmt`, `go vet ./...`, targeted tests, and relevant integration tests. For frontend changes, require formatting/lint, TypeScript type-checking, and UI tests.
+- Never hand-edit generated OpenAPI client/types or `sqlc` output; edit the source specification/SQL and regenerate.
 - Do not accept generated code merely because it compiles.
 - Keep prompts and task notes where useful, but do not publish secrets or private client data.
 
@@ -812,7 +923,7 @@ For security-sensitive changes, use a review checklist or a second independent r
 
 Benri demonstrates:
 
-- practical Claude Code use and code review discipline
+- practical Claude Code use across a Go backend and TypeScript frontend, with code review discipline
 - an application-agent harness with bounded execution, checkpointing, tool permissions, and recovery
 - an evaluation dataset, deterministic regression checks, and calibrated LLM-as-judge analysis
 - Japanese retrieval and evidence-grounded response generation
@@ -851,7 +962,7 @@ A public mock demo is useful for showing the workflow, but it must not be descri
 4. Approve only `send_demo_reply` and `create_ticket`; show the exact actions in the approval summary.
 5. Show the fixture outbox and ticket, then the audit events and Kairo trace (if configured).
 6. Open a complaint and a no-evidence case; show escalation with no customer-facing draft.
-7. Open the injection case; show that the agent has no write capability and that no unapproved action exists.
+7. Open the injection case; show that the agent cannot approve or perform privileged business writes and that no unapproved action exists.
 8. Show the evaluation report and one negative-control result.
 
 ---
@@ -876,7 +987,7 @@ The original three-week part-time estimate is too optimistic for this amount of 
 - payload-specific approvals, immutable draft revisions, idempotency
 - prompt/tool injection and cross-tenant tests
 
-**Exit:** tests prove the agent cannot write and executor cannot act without a persisted approval.
+**Exit:** tests prove the agent cannot approve/enqueue/perform privileged business writes and that the executor cannot act without a persisted approval.
 
 ### Phase C — Japanese retrieval and quality
 
@@ -919,20 +1030,20 @@ If time is constrained, cut the public deployment, bilingual UI, or optional den
 
 **English draft:**
 
-> Built Benri Agent, a TypeScript/Node.js human-in-the-loop operations agent using MCP, PostgreSQL, and pgvector/lexical retrieval. Designed a read-only agent runtime with checkpoint recovery and a separate approval-gated executor; added a versioned Japanese evaluation suite, CI safety gates, and OpenTelemetry tracing through Kairo. Routed chat inference through ModelRail. Reported classification, escalation, retrieval, latency, and cost results from reproducible runs.
+> Built Benri Agent, a Go-based human-in-the-loop operations backend with a TypeScript/Next.js review UI, MCP tools, PostgreSQL, and Japanese lexical/optional vector retrieval. Designed a write-isolated agent runtime with checkpoint recovery and a separate approval-gated executor; added a versioned Japanese evaluation suite, CI safety gates, and OpenTelemetry tracing through Kairo. Routed chat inference through ModelRail. Reported classification, escalation, retrieval, latency, and cost results from reproducible runs.
 
 Replace any technology or result that was not actually implemented. Add numeric metrics only from committed evaluation reports.
 
 **Japanese one-liner draft:**
 
-> 日本語の顧客問い合わせを対象に、根拠となるナレッジを参照して返信案を作成する承認制AIエージェント「Benri」をTypeScript/Node.jsで開発。読み取り専用のエージェント実行環境と承認済み操作のみを処理する実行環境を分離し、MCP、評価テスト、チェックポイントによる復旧、OpenTelemetryによる可観測性を実装。
+> 日本語の顧客問い合わせを対象に、根拠となるナレッジを参照して返信案を作成する承認制AIエージェント「Benri」をGoで開発し、TypeScript/Next.jsで運用画面を実装。読み取り専用のエージェント実行環境と承認済み操作のみを処理する実行環境を分離し、MCP、評価テスト、チェックポイントによる復旧、OpenTelemetryによる可観測性を実装。
 
 Use this only after the described features exist. Adjust the wording if dense retrieval, Kairo, or ModelRail is not actually integrated.
 
 ### 17.3 Job alignment
 
-- **Cogent Labs:** strongest evidence is the coding-agent workflow log, application-agent harness, checkpoints, tool permissions, independent review, gold cases, evaluation methodology, and TypeScript/Node implementation. Do not present a customer-support agent as if it were a coding-agent product.
-- **Rapyuta Robotics:** strongest evidence is the MCP services, retrieval pipeline, backend boundaries, worker recovery, cloud/deployment discipline, CI, and operational observability. Use the project to explain how the same engineering principles transfer to robotics/logistics workflows.
+- **Cogent Labs:** strongest evidence is the coding-agent workflow log, application-agent harness, checkpoints, tool permissions, independent review, gold cases, and evaluation methodology. The UI is TypeScript/Next.js, but the backend is Go; do not claim this project demonstrates a Node.js backend. Be prepared to explain why Go was selected and how the same harness concepts transfer to coding agents.
+- **Rapyuta Robotics:** strongest evidence is the Go backend, MCP services, Japanese retrieval pipeline, backend boundaries, worker recovery, cloud/deployment discipline, CI, and operational observability. Use the project to explain how the same engineering principles transfer to robotics/logistics workflows.
 
 Treat job descriptions as moving targets. Re-check the exact posting before tailoring an application; this spec should remain a coherent project, not a collection of keywords from one vacancy.
 
@@ -940,31 +1051,56 @@ Treat job descriptions as moving targets. Re-check the exact posting before tail
 
 ## 18. Configuration contract
 
-Keep configuration centralized and validate it at process startup. Example variables:
+Keep configuration centralized and validate it at process startup. Use separate environment files/secret sets for API, agent-worker, MCP read servers, executor-worker, and web. Example variables:
 
 ```dotenv
-NODE_ENV=development
-DATABASE_URL=postgres://...
+# Shared non-secret settings
+BENRI_ENV=development
 SESSION_SECRET=...
 DEMO_MODE=1
 MOCK_LLM=1
+
+# Database credentials — one URL per process/role
+BENRI_API_DATABASE_URL=postgres://...
+BENRI_AGENT_DATABASE_URL=postgres://...
+BENRI_EXECUTOR_DATABASE_URL=postgres://...
+BENRI_MIGRATOR_DATABASE_URL=postgres://...
+
+# ModelRail — agent-worker only
 MODELRAIL_BASE_URL=
 MODELRAIL_API_KEY=
 MODELRAIL_CHAT_MODEL=
 MODELRAIL_EMBEDDING_MODEL=
+
+# Worker limits
+BENRI_AGENT_WORKER_CONCURRENCY=4
+BENRI_EXECUTOR_WORKER_CONCURRENCY=2
 BENRI_MAX_MODEL_CALLS_PER_RUN=
-BENRI_MAX_TOOL_CALLS_PER_RUN=
-BENRI_MAX_RUN_DURATION_MS=
+BENRI_MAX_MCP_CALLS_PER_RUN=
+BENRI_MAX_RUN_DURATION=90s
 BENRI_MAX_INPUT_TOKENS=
 BENRI_MAX_OUTPUT_TOKENS=
 BENRI_MAX_COST_PER_RUN_JPY=
-KAIRO_OTLP_ENDPOINT=
+BENRI_JOB_LEASE_DURATION=30s
+BENRI_JOB_HEARTBEAT_INTERVAL=10s
+
+# MCP child processes — separate least-privilege credentials
+BENRI_KB_MCP_DATABASE_URL=postgres://...
+BENRI_CRM_MCP_DATABASE_URL=postgres://...
+BENRI_TICKET_MCP_DATABASE_URL=postgres://...
+
+# Observability
+OTEL_SERVICE_NAME=benri-api
+OTEL_EXPORTER_OTLP_ENDPOINT=
 KAIRO_TRACE_UI_BASE_URL=
+
+# Web only
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
 ```
 
-The exact ModelRail endpoint path and response fields must be verified against the deployed gateway. Do not assume that chat completions, embeddings, model listing, or cost reporting all exist just because one OpenAI-compatible endpoint works.
+The exact ModelRail endpoint path and response fields must be verified against the deployed gateway. Do not assume chat completions, embeddings, model listing, streaming, or cost reporting all exist because one OpenAI-compatible endpoint works.
 
-Never commit actual secrets. Provide `.env.example` with placeholder values only.
+Do not provide any database credential to the web process. Do not provide the executor, migrator, or ticket-MCP database credential to the agent-worker. Do not provide the ModelRail key to the executor. Never commit actual secrets; provide `.env.example` files with placeholders and document which process consumes each variable.
 
 ---
 
@@ -974,19 +1110,43 @@ These are explicit implementation decisions, not reasons to block the project:
 
 1. **ModelRail embeddings:** run a capability spike first. If unsupported, ship lexical retrieval before adding a separate embeddings dependency.
 2. **Japanese corpus review:** obtain competent Japanese-language review for fixture content and representative drafts; disclose what was reviewed.
-3. **MCP SDK transport:** smoke-test the selected v2 package and stdio transport in the exact Node runtime used by Docker and local development.
+3. **MCP SDK transport:** pin a compatible release of `github.com/modelcontextprotocol/go-sdk`; smoke-test stdio client/server interoperability and the required protocol revision in the exact Go toolchain and Docker images. The official Go SDK package is `github.com/modelcontextprotocol/go-sdk/mcp`.
 4. **Tenant enforcement:** implement tenant-scoped repositories first; add PostgreSQL RLS if the context propagation and tests remain straightforward.
 5. **Hosting:** choose a host only after the local Compose deployment is repeatable. Do not let free-tier constraints weaken security or reliability.
 6. **Cost ceiling:** choose a default only after measuring the selected ModelRail route and deciding an acceptable development budget.
+7. **Kagome dictionary:** benchmark IPA and UniDic on the labelled Japanese fixture set; select and version one dictionary for the initial index.
+8. **Go toolchain and dependencies:** pin the supported Go patch release and exact module versions at implementation start; update security patches deliberately and rerun the full suite.
+9. **OpenAPI generation:** choose and pin Go and TypeScript generators; CI must fail if generated output is stale.
 
 ---
 
-## 20. Definition of an honest release
+## 20. Implementation references
+
+These are implementation starting points, not substitutes for a dependency/version review when the repository is scaffolded. Pin concrete module/package versions in `go.mod` and `web/package.json`; do not use floating `latest` dependencies in production builds.
+
+- Go release history and support policy: https://go.dev/doc/devel/release
+- Official MCP Go SDK and protocol compatibility: https://github.com/modelcontextprotocol/go-sdk
+- MCP Go SDK documentation: https://go.sdk.modelcontextprotocol.io/
+- Kagome v2 Japanese morphological analyzer: https://github.com/ikawaha/kagome
+- `chi` HTTP router: https://github.com/go-chi/chi
+- `oapi-codegen` Go OpenAPI 3.1 code generation: https://github.com/oapi-codegen/oapi-codegen
+- `openapi-typescript`: https://openapi-ts.dev/
+- `pgx` + `sqlc` integration guide: https://docs.sqlc.dev/en/latest/guides/using-go-and-pgx.html
+- OpenTelemetry OTLP specification: https://opentelemetry.io/docs/specs/otlp/
+- Next.js documentation: https://nextjs.org/docs
+
+At the revision date, the Go release history lists Go 1.27.4 as the latest patch release. Re-check the official release page when implementation begins and pin the then-current supported patch. The official Go MCP SDK README documents support for the 2026-07-28 MCP specification in v1.7.0 and later. Kagome v2 is pure Go and includes IPA/UniDic dictionary options and search segmentation; the project must still benchmark those options on its own corpus.
+
+---
+
+## 21. Definition of an honest release
 
 Before publishing v1, verify the following:
 
 - [ ] All stated components exist in the repository and are exercised by tests.
-- [ ] The agent worker has no write permissions and cannot invoke the executor.
+- [ ] Go backend is formatted, vetted, tested, and built from the pinned toolchain; TypeScript UI passes type-check, lint, and UI tests.
+- [ ] Go and TypeScript API types are generated from the same committed OpenAPI contract with no generated-file drift.
+- [ ] The agent worker has no ticket/outbox or approval/execution-queue write permissions and cannot invoke the executor directly.
 - [ ] Approval is bound to the exact draft revision and selected action payloads.
 - [ ] Retries, leases, checkpoint recovery, and action idempotency are tested.
 - [ ] Japanese retrieval metrics are computed from labelled cases.

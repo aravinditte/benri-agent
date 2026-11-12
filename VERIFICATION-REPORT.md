@@ -1,172 +1,169 @@
-# Benri Agent — Verification Report
+# Benri Agent — Verification Report (v3.0, Go + TypeScript)
 
-Build date: 2026-11-12 · Environment: Node v24.22.1, npm 10.9.4, Linux VM
-(no Docker, no PostgreSQL, no pnpm on this machine).
-Verified path: portable `node:sqlite` store + deterministic mock LLM
-(`MOCK_LLM=1`), MCP gateways enabled for the live smoke.
+Build: Build Spec v3.0 rebuild, 2026-11-12. Agent: Muse (see
+AGENT-LOG.md). The v2 report is archived at
+`docs/verification-report-v2.md`. Everything below was executed on this
+machine unless it is listed under **NOT verified**.
 
-## Commands and results (actual outputs)
+## Toolchain (pinned)
 
-| Check | Command | Result |
-|---|---|---|
-| Typecheck (all packages/apps except web) | `npx tsc --noEmit -p tsconfig.json` | **Clean, 0 errors** |
-| Web typecheck | `cd apps/web && npx tsc --noEmit` | **Clean** |
-| Web build | `cd apps/web && npm run build` | **Pass** (7 routes: /, /login, /inquiries/[id], /escalations, /admin + 404) |
-| Tests | `npx vitest run` | **43/43 passed, 9 files** (core suites run twice with identical results) |
-| Evaluation | `npm run eval` | Report below; committed at `evals/reports/latest.json` + `latest.md` |
-| Live smoke | `npx tsx scripts/smoke.ts` | **SMOKE OK** (transcript: `evals/reports/smoke-transcript.txt`) |
-| Web runtime | API :4100 + `next start` :3000 | `/`, `/login`, `/escalations`, `/admin` all **HTTP 200** |
-| Seed | `npm run seed` | `{"articles":20,"customers":10,"orders":10,"inquiries":30}` |
+- Go **1.27.4** (downloaded from go.dev, tarball sha256
+  `7226736c2339719cda28fbf3a54d71aa63bcefe376e98cef00034268dab24840`),
+  pinned in `go.mod`, CI, and `Dockerfile.backend`.
+- oapi-codegen **v2.8.2**, sqlc **v1.31.1**, goose **v3.30.0**.
+- Key Go deps (go.mod/go.sum): chi v5.5.0, pgx/v5 v5.13.0, MCP go-sdk
+  **v1.8.0** (stdio spike: negotiated protocol version **2026-07-28**),
+  kagome/v2 v2.11.1 + kagome-dict/ipa & uni v1.2.6, otel v1.47.0,
+  modernc.org/sqlite v1.62.0 (pure Go, no cgo), x/text v0.44.0.
+- Web (exact pins in web/package.json): next 15.5.29, react 19.1.0,
+  typescript 5.9.3, openapi-typescript 7.13.0.
 
-Test breakdown (43): db store capability/tenant/checkpoint/idempotency 5 ·
-retrieval 5 · japanese-quality 2 · modelrail-client contract 5 · redaction 3 ·
-pipeline/integration/negative-controls 9 · approval+executor 6 ·
-MCP v2 stdio integration 3 · API 5.
+## Verification commands — real outputs
 
-## Evaluation headline metrics (gold v1.0.0, mock LLM)
+| Check | Result |
+|---|---|
+| `gofmt -l cmd internal` | clean (no files listed) |
+| `go vet ./...` | clean |
+| `go build ./...` | OK |
+| `go test ./... -count=1` | **35/35 PASS, 0 fail** (8 packages) |
+| `CGO_ENABLED=1 go test -race ./... -count=1` | **all 8 packages PASS** |
+| `make generate-check` | `generate-check: no drift` (oapi-codegen + openapi-typescript + sqlc regenerated and diffed) |
+| web `npm run typecheck` | clean |
+| web `npm run build` | PASS |
+| web runtime vs Go API | 200 on /, /escalations, /admin, /login, /inquiries/INQ-001 |
+| `go run ./cmd/eval` (bin/eval) | exit 0, all §11.3 gates PASS (below) |
+| `make smoke` (bin/smoke) | **SMOKE OK** — transcript at `evals/reports/smoke-transcript.txt` |
+
+## Eval headline metrics (mock LLM, gold v1.0.0, Go runner)
 
 | Metric | Value | Denominator |
 |---|---|---|
-| Classification accuracy | 0.98 | 49/50 |
+| Classification accuracy | 0.9800 | 49/50 |
 | Classification macro-F1 | 0.9753 | 9 intents |
-| Escalation precision / recall / F1 | 1 / 1 / 1 | TP=16 FP=0 FN=0 |
-| False-safe (must-escalate drafted) | 0 | 16 must-escalate |
+| Escalation precision / recall / F1 | 1.0000 / 1.0000 / 1.0000 | TP=16 FP=0 FN=0 (16 must-escalate) |
 | Retrieval Recall@5 | 0.9625 | 40 labelled cases |
-| Retrieval MRR | 0.8688 | 40 labelled cases |
-| Citation precision / recall | 0.6912 / 0.9412 | 34 drafted labelled cases |
-| Verification pass rate (drafted) | 1.0 | 34 drafted |
+| Retrieval MRR | 0.8875 | 40 labelled cases |
+| Citation precision / recall | 0.7941 / 0.9265 | 34 drafted labelled cases |
+| Verification pass rate | 1.0000 | 34 drafted |
 | Forbidden-claim violations | 0 | 50 cases |
-| Safety (agent writes / unapproved / duplicates / cross-tenant) | 0 / 0 / 0 / 0 | eval run |
-| Latency p50 / p95 (in-process mock) | 4ms / 8ms | 50 runs — not a production figure |
+| Latency p50 / p95 (in-process mock) | ~354ms / ~422ms | 50 runs — NOT production figures |
 
-Gates (SPEC §11.3): escalation recall ≥0.90 **PASS** (1.0) · intent accuracy
-≥0.85 **PASS** (0.98) · macro-F1 ≥0.85 **PASS** (0.9753) · Recall@5 ≥0.90
-**PASS** (0.9625) · hard zero-tolerance **PASS**.
-Known misses, honestly: 1 classification miss (adversarial discount case
-labelled `other`, classified `price_stock` — it still escalates correctly);
-3 retrieval misses (a hiragana-typo case ranking, an FAQ-vs-manual ranking,
-one mixed delivery+invoice query); citation precision is a strict lower
-bound because gold labels are single-article while drafts legitimately cite
-a sibling procedure article.
+Kagome benchmark (§8.2, labelled corpus, search mode): IPA Recall@5
+**0.9375**, MRR **0.8958**; UniDic Recall@5 **0.9375**, MRR **0.8917**.
+Winner: **IPAdic** (`kagome-ipa-1.2.6`), index version
+`lexical-v3-kagome-ipa-1.2.6`. The v2 retrieval thresholds (content 0.18,
+intent-gate 0.12) carried over; the Go eval reproduced v2's headline
+metrics exactly (accuracy, macro-F1, escalation, Recall@5 identical;
+citation precision/recall differ slightly — 0.7941/0.9265 vs v2
+0.6912/0.9412 — because Kagome tokenization changes draft sentence
+selection).
 
-## SPEC §2.2 acceptance criteria — item by item
+Dataset/fixtures byte-identical to v2 (sha256): gold.jsonl
+`bb749920…e49`, inquiries `5df7ec08…229`, articles `cd665e58…152`,
+customers_orders `e69ee8cc…ceb1`.
 
-1. `docker compose up --build` starts PG/API/web/workers — **NOT VERIFIED**
-   (no Docker here). Compose file, Dockerfiles, PG schema/roles provided.
-2. Seed loads 30 inquiries / 20 KB articles / 10 customers+orders / 2 roles —
-   **Verified** (seed output above; 2 tenants seeded for isolation).
-3. Routine delivery inquiry completes pipeline, cites KB, finds order,
-   reaches `awaiting_review` — **Verified** (pipeline test + live smoke).
-4. Operator inspects evidence, edits draft, approves only selected actions —
-   **Verified** (API revision endpoint creates a new immutable revision and
-   re-verifies; partial-approval executor test; web Review UI built).
-5. Approval persists exact revision + payloads; executor creates ticket +
-   outbox; repeat creates no duplicates — **Verified** (executor tests +
-   smoke: re-approval 409, counts stable at 1/1).
-6. Complaint / no-evidence / identity-ambiguous / safety cases escalate
-   without a customer draft — **Verified** (tests + eval: 16/16 escalations,
-   complaint handoff summary asserted, no draft rows).
-7. Prompt/tool-output injection cannot cause unapproved writes or change
-   the action set — **Verified** (8/8 adversarial gold cases; agent store
-   handle structurally rejects writes; ticket tool refuses unapproved IDs).
-8. Edited draft is re-verified; old verification/approval not reusable —
-   **Verified** (revision endpoint re-runs verifier; REVISION_MISMATCH and
-   DRAFT_NOT_PENDING rejection tests).
-9. Worker crash recovery: agent resumes from checkpoint without duplicating
-   steps; executor crash/replay creates no duplicate action — **Verified**
-   (crash-after-`retrieve` test with lease expiry; idempotent replay tests;
-   ambiguous outcome → `unknown`, never blind-retried).
-10. Tenant-scoped everything; cross-tenant fails closed — **Verified**
-    (store tests, sakura-tenant pipeline test, eval safety zeros).
-11. Every run creates a trace; Kairo down does not fail the workflow —
-    **Verified locally** (OTel-shaped spans in the in-memory collector;
-    exporter-down test passes). Live Kairo export **NOT VERIFIED**.
-12. ModelRail failure → bounded visible failure — **Verified**
-    (`GATEWAY_UNAVAILABLE` test with failing transport + timeout mapping;
-    contract tests for chat/usage/errors). Live gateway **NOT VERIFIED**.
-13. CI runs the suites — CI workflow provided (`.github/workflows/ci.yml`),
-    **NOT RUN** (no push performed). The same commands were run locally.
-14. 50-case evaluation report in JSON + Markdown with denominators and
-    versions — **Verified** (`evals/reports/latest.json`, `latest.md`).
-15. Public demo constraints — no public deployment was made; API refuses
-    arbitrary submission when `NODE_ENV=production` without DEMO_MODE.
-16. README documents actual state, limitations, credentials, measured
-    results only — **Verified** (README "Status (honest)" section).
+## Acceptance criteria (§2.2), item by item
 
-## SPEC §20 honest-release checklist
+1. **Compose stack** — `docker-compose.yml` + Dockerfiles provided with
+   per-role env (§18). **UNEXECUTED here (no Docker)** — see NOT verified.
+2. **Seed** — VERIFIED: Go seed loads 30 inquiries / 20 KB articles /
+   10 orders + customers / 2 tenants / demo operator+admin users,
+   redacted at seed with the real redactor (test + smoke).
+3. **Routine pipeline** — VERIFIED: pipeline tests + eval (49/50 intent
+   accuracy) + smoke; INQ-001/INQ-006 reach awaiting_review with
+   citations and CRM order context.
+4. **Inspect/edit/approve selected** — VERIFIED: draft detail API,
+   revision endpoint (re-verifies), approval over HTTP test; web UI
+   screens kept from v2.
+5. **Approval binding + exactly-once** — VERIFIED: approval/executor
+   flow tests (exactly 1 ticket + 1 outbox, replay-safe), re-approval
+   refused, wrong revision/hash refused, partial approval honoured.
+6. **Escalation classes** — VERIFIED: complaint + no-evidence pipeline
+   tests; eval: 16/16 must-escalate caught, 0 false-safe. (Identity-
+   ambiguous and safety-sensitive cases are in the gold set and pass.)
+7. **Injection resistance** — VERIFIED: injection pipeline test + smoke
+   (escalates, no writes, action set unchanged — actions are
+   deterministic templates, never model output); tool-output injection
+   hook (MalformedToolOutput) ported in the pipeline.
+8. **Edited draft re-verified** — VERIFIED: revision endpoint rebuilds
+   the verification context and re-runs the verifier; approval
+   re-verifies again and refuses with REVERIFICATION_FAILED; approvals
+   are bound to revision+hash so a prior approval cannot cover a new
+   revision (tests: REVISION_MISMATCH / DRAFT_NOT_PENDING paths).
+9. **Kill/resume** — VERIFIED for the agent (crash-after-step test:
+   resume completes with no duplicated steps). Executor kill-during-write
+   is covered by the ambiguous-outcome test (job → `unknown`, never
+   blind-retried) and idempotent replay; a literal mid-write process kill
+   was not performed.
+10. **Tenant scoping** — VERIFIED: store cross-tenant test, pipeline
+    cross-tenant test, MCP tenant-binding test (argument tenant ≠ launch
+    tenant refused).
+11. **Traces** — VERIFIED locally: trace-tree test asserts `benri.run` +
+    step spans in the in-memory recorder with a deliberately unreachable
+    OTLP endpoint (export failure does not fail the run). Live Kairo
+    ingestion is NOT verified.
+12. **ModelRail failure** — VERIFIED: gateway-down test → run `failed`
+    with GATEWAY_UNAVAILABLE; per-run hard limits bound every run.
+13. **CI test coverage** — CI yaml provided (unit/integration/state/
+    authorization/injection/retrieval/eval suites are the Go tests +
+    eval gate). **CI itself NOT run** (no GitHub run in this delivery).
+14. **Eval report** — VERIFIED: `evals/reports/latest.json` + `latest.md`
+    with denominators and dataset/prompt/policy/model/index versions.
+15. **Public demo** — not deployed in this delivery; demo mode is
+    fixture-only + mock-labelled by construction (`/health` mode label).
+16. **README honesty** — README documents deployment state, limitations,
+    demo credentials, and only the measured results above. No Node.js
+    backend claim (§0.2): the backend is Go; TS is the web UI only.
+17. **Go/web CI checks (#17, NEW)** — gofmt/vet/test/test-race all run
+    locally (above) and are wired into `.github/workflows/ci.yml`. Web:
+    typecheck + build wired and run locally. GAP: the web app has no
+    eslint config or UI test suite (same as v2), so CI has no web
+    lint/UI-test step — recorded here rather than faked.
+18. **Generated contract types (#18, NEW)** — VERIFIED: Go server stubs +
+    types from oapi-codegen, TS types from openapi-typescript, sqlc
+    output — all generated from `api/openapi.yaml` / `db/queries`, all
+    committed, `make generate` + drift check exercised locally (no
+    drift).
 
-- [x] All stated components exist and are exercised by tests.
-- [x] Agent worker has no write permissions and cannot invoke the executor
-      (capability-scoped store handle + read-only MCP servers only; proven
-      by tests that assert CapabilityError).
-- [x] Approval bound to exact draft revision + selected action payloads
-      (hashes verified at approval and again in the executor/ticket tool).
-- [x] Leases, checkpoints, idempotency tested (incl. crash-resume and
-      ambiguous-outcome `unknown`).
-- [x] Japanese retrieval metrics computed from labelled cases.
-- [x] Verifier limits documented (docs + code comments); no semantic-
-      entailment claim anywhere.
-- [x] Japanese content review status stated accurately:
-      **not native-reviewed** (dataset README, reports, README).
-- [x] ModelRail and Kairo failure modes tested (gateway-down, exporter-down).
-- [x] Mock mode labelled as mock in API health, worker logs, eval reports,
-      README, and this report.
-- [x] No public deployment; no real external action possible.
-- [x] Evaluation reports contain dataset/prompt/policy/model/index/judge
-      versions.
-- [x] README/docs contain measured values only (all from the eval run above).
-- [x] AGENT-LOG.md records the actual agent (Muse), real corrections
-      (embeddings spike, tokenizer choice, seed redaction bug, relevance
-      gate rebuild, worker-hang fix), and verification commands.
+## Trust boundary (§9, v3 finer) — test evidence
 
-## Deviations from spec (with reasons)
+`internal/store` capability tests prove: agent handle cannot insert
+approvals / execution jobs / tickets / outbox; api handle cannot write
+tickets / outbox; executor handle cannot insert tickets directly (only
+the ticket-mcp role can); kb-mcp handle cannot write. The agent-worker
+image ships no mcp-ticket binary; the executor image ships only
+mcp-ticket and its env carries no ModelRail key.
 
-1. **Dense retrieval disabled.** ModelRail embeddings spike: the sibling
-   ModelRail codebase (`~/workspace/modelrail`) contains no embeddings
-   endpoint (verified by source search; chat/completions only). Per SPEC
-   §8.3/§19.1 the fallback is lexical-only, recorded — never silently
-   bypassed. Client `embeddings()` throws `EMBEDDINGS_UNSUPPORTED`.
-   RRF helper present but unused.
-2. **Tokenizer:** kuromoji not adopted. Explicitly selected dictionary-free
-   tokenizer (SPEC §8.2 allows "another explicitly selected tokenizer"):
-   NFKC + particle-split character bigrams + a small documented
-   query-expansion dictionary for hiragana spellings. Retrieval is called
-   **lexical retrieval**, never BM25.
-3. **MCP v2 used, no v1 fallback needed:** `@modelcontextprotocol/server`
-   2.4.0 + `@modelcontextprotocol/client` 2.4.0 stdio smoke test passed in
-   this Node 24 runtime before adoption (echo tool listed and called), and
-   the real KB/CRM servers are covered by subprocess integration tests.
-4. **Runtime:** local processes run TypeScript via `tsx` instead of a
-   compiled `dist/` build; Dockerfiles do the same (unexecuted).
-5. **npm workspaces** are the working install path; `pnpm-workspace.yaml`
-   is shipped per SPEC §13 but pnpm is not installed here (unverified).
-6. **Classifier/policy calibration:** the deterministic mock classifier's
-   keyword sets, the policy pattern lists, and the retrieval coverage
-   thresholds (0.18 standard / 0.12 intent-matched) were calibrated against
-   the labelled gold set, as SPEC §5.4/§8.3 prescribe. The overseas rule is
-   evidence-driven (a scope term absent from all retrieved evidence has no
-   grounded answer).
+## Deviations from spec (and why)
 
-## NOT verified (explicit)
+1. **PgStore method bodies are explicit stubs** returning an
+   "unverified" error. The PG path ships goose migrations (incl.
+   per-role grants), sqlc queries + generated `dbgen` code (generation
+   verified), the pgx pool handle, and per-role URL wiring — but with no
+   PostgreSQL on this machine, a blind 70-method port could not be
+   verified and would be a false claim. The SQLite store is the verified
+   implementation of the same contract.
+2. **ApproveRequest shape**: the canonical OpenAPI `ApproveRequest`
+   carries `revision` + `selected_action_ids` only, so the API binds the
+   stored payload hashes (the ones shown in the draft detail) into the
+   approval record. The executor/ticket server still re-validate stored
+   payload ↔ stored hash ↔ approval before any write.
+3. **Japanese style length check** uses rune counts (v2 used JS UTF-16
+   lengths) — a deliberate, recorded porting difference; thresholds are
+   generous (80–1200) and no gold case is near the boundary.
+4. **Smoke/Makefile `seed` recipe** seeds via API first-boot (the same
+   code path used everywhere) rather than a separate seed binary.
 
-- PostgreSQL/Drizzle execution, pgvector, `tsvector` ranking, RLS, and the
-  DB role grants in `pg-roles.sql` (provided, never run against real PG).
-- Docker / Docker Compose startup and all Dockerfiles.
-- Real ModelRail live inference (no gateway available; client contract-
-  tested against mock transports only).
-- Live Kairo OTLP ingestion (exporter implemented + failure-tested only).
-- GitHub CI run (workflow provided; nothing pushed).
-- Native Japanese review of fixtures/drafts (none available).
-- pnpm workspace install.
-- The seeded `data/benri.sqlite` in this workspace is a build artifact;
-  a clean checkout reproduces it with `npm run seed`.
+## NOT verified
 
-## Live smoke transcript (2026-11-12, MCP gateways on)
-
-Full transcript committed at `evals/reports/smoke-transcript.txt`. Summary:
-seed ok → API up → login ok → invoice run `awaiting_review` with actions
-[send_demo_reply, create_ticket] → approval accepted → executor (ticket via
-MCP) created exactly 1 ticket + 1 outbox → re-approval rejected (409) →
-replay created no duplicates → complaint escalated
-(COMPLAINT_REQUIRES_HUMAN) with NO draft → injection escalated
-(POLICY_NOT_COVERED) with no new writes → **SMOKE OK**.
+- PostgreSQL execution of any kind (migrations, grants, sqlc queries,
+  PgStore) — no PostgreSQL on this machine.
+- Docker / Docker Compose (Dockerfiles + compose provided, unexecuted).
+- GitHub CI run of `.github/workflows/ci.yml` (provided, not run).
+- Live ModelRail inference (mock mode verified; live-response parsing is
+  contract-tested with an injected transport).
+- Live Kairo/OTLP ingestion (span tree verified in-memory; exporter is
+  async and failure-isolated).
+- Native Japanese review of fixtures/gold text (labelled
+  `not_native_reviewed` everywhere).
+- pnpm (v3 uses npm workspaces for web only; the Go backend has no JS).
