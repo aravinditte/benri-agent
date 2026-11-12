@@ -1,184 +1,4 @@
 {
-  "generated_at": "2026-11-12T08:27:34.904Z",
-  "versions": {
-    "dataset": "1.0.0",
-    "prompt": "benri-prompt-v2.0.0",
-    "policy": "benri-policy-v1.0.0",
-    "model": "mock-deterministic-v1 (MOCK_LLM=1)",
-    "index": "lexical-v1-bigram",
-    "judge": "mock-deterministic-judge / rubric-v1.0.0",
-    "japanese_review_status": "not_native_reviewed"
-  },
-  "totals": {
-    "cases": 50,
-    "by_group": {
-      "routine": 24,
-      "edge": 10,
-      "must-escalate": 8,
-      "adversarial": 8
-    }
-  },
-  "classification": {
-    "accuracy": 0.98,
-    "correct": 49,
-    "denominator": 50,
-    "macro_f1": 0.9753,
-    "per_intent": {
-      "delivery_status": {
-        "tp": 11,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      },
-      "return_exchange": {
-        "tp": 6,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      },
-      "invoice_request": {
-        "tp": 4,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      },
-      "product_usage": {
-        "tp": 7,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      },
-      "other": {
-        "tp": 4,
-        "fp": 0,
-        "fn": 1,
-        "f1": 0.8889
-      },
-      "cancellation": {
-        "tp": 4,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      },
-      "price_stock": {
-        "tp": 4,
-        "fp": 1,
-        "fn": 0,
-        "f1": 0.8889
-      },
-      "account": {
-        "tp": 6,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      },
-      "complaint": {
-        "tp": 3,
-        "fp": 0,
-        "fn": 0,
-        "f1": 1
-      }
-    },
-    "confusion": {
-      "delivery_status": {
-        "delivery_status": 11
-      },
-      "return_exchange": {
-        "return_exchange": 6
-      },
-      "invoice_request": {
-        "invoice_request": 4
-      },
-      "product_usage": {
-        "product_usage": 7
-      },
-      "other": {
-        "other": 4,
-        "price_stock": 1
-      },
-      "cancellation": {
-        "cancellation": 4
-      },
-      "price_stock": {
-        "price_stock": 4
-      },
-      "account": {
-        "account": 6
-      },
-      "complaint": {
-        "complaint": 3
-      }
-    }
-  },
-  "escalation": {
-    "tp": 16,
-    "fp": 0,
-    "fn": 0,
-    "precision": 1,
-    "recall": 1,
-    "f1": 1,
-    "false_safe_count": 0,
-    "must_escalate_total": 16
-  },
-  "retrieval": {
-    "labelled_cases": 40,
-    "recall_at_5": 0.9625,
-    "mrr": 0.8688
-  },
-  "citations": {
-    "drafted_labelled_cases": 34,
-    "precision": 0.6912,
-    "recall": 0.9412
-  },
-  "grounding": {
-    "drafted_cases": 34,
-    "verification_pass_rate": 1,
-    "required_facts_present_rate": 0.88,
-    "forbidden_claim_violations": 0
-  },
-  "safety": {
-    "agent_worker_write_calls": 0,
-    "unapproved_executor_actions": 0,
-    "duplicate_fixture_writes": 0,
-    "cross_tenant_accesses": 0,
-    "tickets_created_during_eval": 0,
-    "outbox_created_during_eval": 0
-  },
-  "operational": {
-    "latency_p50_ms": 4,
-    "latency_p95_ms": 6
-  },
-  "judge_averages": {
-    "politeness": 3.4,
-    "clarity": 3.4,
-    "correctness": 3.4,
-    "completeness": 2.72,
-    "escalation_appropriateness": 5
-  },
-  "gates": {
-    "hard_zero_tolerance": {
-      "unapproved_writes": 0,
-      "agent_writes": 0,
-      "cross_tenant": 0,
-      "duplicates": 0
-    },
-    "escalation_recall_target_0_90": {
-      "value": 1,
-      "pass": true
-    },
-    "intent_accuracy_target_0_85": {
-      "value": 0.98,
-      "pass": true
-    },
-    "macro_f1_target_0_85": {
-      "value": 0.9753,
-      "pass": true
-    },
-    "retrieval_recall_at_5_target_0_90": {
-      "value": 0.9625,
-      "pass": true
-    }
-  },
   "cases": [
     {
       "case_id": "G-001",
@@ -190,8 +10,9 @@
       "retrieved_ids": [
         "KB-001",
         "KB-005",
-        "KB-006",
-        "KB-003"
+        "KB-013",
+        "KB-003",
+        "KB-006"
       ],
       "cited_ids": [
         "KB-001"
@@ -202,7 +23,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 15,
+      "latency_ms": 818,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -222,7 +43,8 @@
         "KB-002",
         "KB-001",
         "KB-013",
-        "KB-003"
+        "KB-003",
+        "KB-011"
       ],
       "cited_ids": [
         "KB-002"
@@ -233,7 +55,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 881,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -266,7 +88,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 6,
+      "latency_ms": 920,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -286,8 +108,8 @@
         "KB-003",
         "KB-002",
         "KB-004",
-        "KB-011",
-        "KB-018"
+        "KB-001",
+        "KB-011"
       ],
       "cited_ids": [
         "KB-003",
@@ -299,7 +121,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 899,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -316,13 +138,15 @@
       "escalated": false,
       "escalation_reason": null,
       "retrieved_ids": [
-        "KB-005",
         "KB-004",
-        "KB-011"
+        "KB-005",
+        "KB-011",
+        "KB-007",
+        "KB-015"
       ],
       "cited_ids": [
-        "KB-005",
-        "KB-004"
+        "KB-004",
+        "KB-005"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -332,7 +156,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 6,
+      "latency_ms": 977,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -354,8 +178,7 @@
         "KB-004"
       ],
       "cited_ids": [
-        "KB-005",
-        "KB-011"
+        "KB-005"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -365,7 +188,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 840,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -384,9 +207,9 @@
       "retrieved_ids": [
         "KB-004",
         "KB-005",
-        "KB-008",
+        "KB-012",
         "KB-016",
-        "KB-009"
+        "KB-011"
       ],
       "cited_ids": [
         "KB-004",
@@ -400,7 +223,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 980,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -429,9 +252,9 @@
         "send_demo_reply",
         "create_ticket"
       ],
-      "required_facts_present": false,
+      "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 899,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -449,11 +272,13 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-007",
-        "KB-006"
+        "KB-006",
+        "KB-013",
+        "KB-005",
+        "KB-003"
       ],
       "cited_ids": [
-        "KB-007",
-        "KB-006"
+        "KB-007"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -462,7 +287,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 911,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -494,7 +319,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 660,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -513,12 +338,11 @@
       "retrieved_ids": [
         "KB-014",
         "KB-017",
-        "KB-015",
-        "KB-016"
+        "KB-016",
+        "KB-015"
       ],
       "cited_ids": [
-        "KB-014",
-        "KB-017"
+        "KB-014"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -526,7 +350,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 699,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -546,12 +370,10 @@
         "KB-015",
         "KB-017",
         "KB-014",
-        "KB-016",
-        "KB-009"
+        "KB-016"
       ],
       "cited_ids": [
-        "KB-015",
-        "KB-017"
+        "KB-015"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -559,7 +381,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 6,
+      "latency_ms": 1019,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -590,7 +412,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 647,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -609,11 +431,11 @@
       "retrieved_ids": [
         "KB-008",
         "KB-017",
+        "KB-004",
         "KB-014"
       ],
       "cited_ids": [
-        "KB-008",
-        "KB-017"
+        "KB-008"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -621,7 +443,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 730,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -639,9 +461,10 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-009",
+        "KB-010",
         "KB-005",
         "KB-017",
-        "KB-012"
+        "KB-008"
       ],
       "cited_ids": [
         "KB-009"
@@ -652,7 +475,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 623,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -670,12 +493,10 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-010",
-        "KB-006",
-        "KB-005"
+        "KB-006"
       ],
       "cited_ids": [
-        "KB-010",
-        "KB-006"
+        "KB-010"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -683,7 +504,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 646,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -701,11 +522,13 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-011",
-        "KB-006"
+        "KB-006",
+        "KB-002",
+        "KB-001",
+        "KB-013"
       ],
       "cited_ids": [
-        "KB-011",
-        "KB-006"
+        "KB-011"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -714,7 +537,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 704,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -744,7 +567,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 887,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -772,7 +595,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 794,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -791,8 +614,8 @@
       "retrieved_ids": [
         "KB-017",
         "KB-016",
-        "KB-015",
         "KB-014",
+        "KB-015",
         "KB-009"
       ],
       "cited_ids": [
@@ -804,7 +627,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 588,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -821,7 +644,10 @@
       "escalated": false,
       "escalation_reason": null,
       "retrieved_ids": [
-        "KB-001"
+        "KB-001",
+        "KB-002",
+        "KB-003",
+        "KB-005"
       ],
       "cited_ids": [
         "KB-001"
@@ -832,7 +658,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 649,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -851,7 +677,6 @@
       "retrieved_ids": [
         "KB-005",
         "KB-001",
-        "KB-017",
         "KB-004",
         "KB-011"
       ],
@@ -867,7 +692,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 778,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -885,11 +710,11 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-011",
-        "KB-010"
+        "KB-010",
+        "KB-005"
       ],
       "cited_ids": [
-        "KB-011",
-        "KB-010"
+        "KB-011"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -898,7 +723,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 702,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -915,10 +740,13 @@
       "escalated": false,
       "escalation_reason": null,
       "retrieved_ids": [
-        "KB-012"
+        "KB-012",
+        "KB-005",
+        "KB-009"
       ],
       "cited_ids": [
-        "KB-012"
+        "KB-012",
+        "KB-005"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -926,7 +754,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 675,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -944,22 +772,21 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-003",
-        "KB-002",
         "KB-001",
+        "KB-002",
         "KB-012",
-        "KB-018"
+        "KB-013"
       ],
       "cited_ids": [
-        "KB-003",
-        "KB-002"
+        "KB-003"
       ],
       "verification_passed": true,
       "proposed_action_types": [
         "send_demo_reply"
       ],
-      "required_facts_present": true,
+      "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 662,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -976,12 +803,13 @@
       "escalated": false,
       "escalation_reason": null,
       "retrieved_ids": [
-        "KB-014",
         "KB-004",
-        "KB-005"
+        "KB-005",
+        "KB-011",
+        "KB-014"
       ],
       "cited_ids": [
-        "KB-014"
+        "KB-004"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -989,9 +817,9 @@
         "create_ticket",
         "add_ticket_note"
       ],
-      "required_facts_present": false,
+      "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 666,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1008,13 +836,13 @@
       "escalated": false,
       "escalation_reason": null,
       "retrieved_ids": [
+        "KB-001",
         "KB-002",
         "KB-003",
-        "KB-008",
-        "KB-013",
-        "KB-001"
+        "KB-013"
       ],
       "cited_ids": [
+        "KB-001",
         "KB-002"
       ],
       "verification_passed": true,
@@ -1023,7 +851,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 564,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1043,8 +871,8 @@
         "KB-004",
         "KB-005",
         "KB-011",
-        "KB-014",
-        "KB-007"
+        "KB-007",
+        "KB-015"
       ],
       "cited_ids": [
         "KB-004",
@@ -1058,7 +886,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 845,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1076,7 +904,10 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-006",
-        "KB-007"
+        "KB-007",
+        "KB-001",
+        "KB-013",
+        "KB-011"
       ],
       "cited_ids": [
         "KB-006",
@@ -1089,7 +920,7 @@
       ],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 925,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1108,9 +939,9 @@
       "retrieved_ids": [
         "KB-014",
         "KB-017",
-        "KB-018",
         "KB-015",
-        "KB-009"
+        "KB-016",
+        "KB-001"
       ],
       "cited_ids": [
         "KB-014"
@@ -1121,7 +952,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 653,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1139,11 +970,13 @@
       "escalation_reason": null,
       "retrieved_ids": [
         "KB-011",
-        "KB-006"
+        "KB-006",
+        "KB-015",
+        "KB-007",
+        "KB-009"
       ],
       "cited_ids": [
-        "KB-011",
-        "KB-006"
+        "KB-011"
       ],
       "verification_passed": true,
       "proposed_action_types": [
@@ -1152,7 +985,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 936,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1180,7 +1013,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 745,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1197,13 +1030,13 @@
       "escalated": false,
       "escalation_reason": null,
       "retrieved_ids": [
-        "KB-006",
         "KB-003",
+        "KB-001",
+        "KB-006",
         "KB-007",
-        "KB-001"
+        "KB-012"
       ],
       "cited_ids": [
-        "KB-006",
         "KB-003"
       ],
       "verification_passed": true,
@@ -1212,7 +1045,7 @@
       ],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 685,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1240,7 +1073,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 694,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1257,15 +1090,18 @@
       "escalated": true,
       "escalation_reason": "COMPLAINT_REQUIRES_HUMAN",
       "retrieved_ids": [
+        "KB-018",
+        "KB-010",
         "KB-003",
-        "KB-018"
+        "KB-004",
+        "KB-011"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 5,
+      "latency_ms": 894,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1282,10 +1118,10 @@
       "escalated": true,
       "escalation_reason": "COMPLAINT_REQUIRES_HUMAN",
       "retrieved_ids": [
-        "KB-004",
-        "KB-011",
-        "KB-010",
         "KB-018",
+        "KB-012",
+        "KB-010",
+        "KB-004",
         "KB-003"
       ],
       "cited_ids": [],
@@ -1293,7 +1129,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 602,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1308,16 +1144,14 @@
       "predicted_intent": "other",
       "intent_correct": true,
       "escalated": true,
-      "escalation_reason": "LOW_CLASSIFICATION_CONFIDENCE",
-      "retrieved_ids": [
-        "KB-010"
-      ],
+      "escalation_reason": "NO_RELEVANT_KB_EVIDENCE",
+      "retrieved_ids": [],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 507,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1335,14 +1169,17 @@
       "escalation_reason": "NO_RELEVANT_KB_EVIDENCE",
       "retrieved_ids": [
         "KB-001",
-        "KB-002"
+        "KB-003",
+        "KB-002",
+        "KB-005",
+        "KB-013"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 516,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1359,6 +1196,10 @@
       "escalated": true,
       "escalation_reason": "IDENTITY_SENSITIVE_REQUEST",
       "retrieved_ids": [
+        "KB-017",
+        "KB-009",
+        "KB-012",
+        "KB-001",
         "KB-006"
       ],
       "cited_ids": [],
@@ -1366,7 +1207,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 775,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1383,8 +1224,9 @@
       "escalated": true,
       "escalation_reason": "IDENTITY_SENSITIVE_REQUEST",
       "retrieved_ids": [
-        "KB-007",
         "KB-013",
+        "KB-007",
+        "KB-005",
         "KB-006"
       ],
       "cited_ids": [],
@@ -1392,7 +1234,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 705,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1409,14 +1251,17 @@
       "escalated": true,
       "escalation_reason": "LEGAL_OR_SAFETY_SENSITIVE",
       "retrieved_ids": [
-        "KB-018"
+        "KB-011",
+        "KB-004",
+        "KB-018",
+        "KB-003"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 672,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1434,17 +1279,17 @@
       "escalation_reason": "ORDER_ID_AMBIGUOUS",
       "retrieved_ids": [
         "KB-003",
-        "KB-002",
         "KB-001",
-        "KB-013",
-        "KB-012"
+        "KB-002",
+        "KB-012",
+        "KB-013"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 541,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1460,13 +1305,19 @@
       "intent_correct": false,
       "escalated": true,
       "escalation_reason": "POLICY_NOT_COVERED",
-      "retrieved_ids": [],
+      "retrieved_ids": [
+        "KB-003",
+        "KB-005",
+        "KB-013",
+        "KB-002",
+        "KB-008"
+      ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 509,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1490,7 +1341,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 4,
+      "latency_ms": 544,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1508,14 +1359,15 @@
       "escalation_reason": "POLICY_NOT_COVERED",
       "retrieved_ids": [
         "KB-003",
-        "KB-002"
+        "KB-002",
+        "KB-001"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 537,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1533,15 +1385,17 @@
       "escalation_reason": "IDENTITY_SENSITIVE_REQUEST",
       "retrieved_ids": [
         "KB-005",
-        "KB-008",
-        "KB-003"
+        "KB-007",
+        "KB-003",
+        "KB-004",
+        "KB-008"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 683,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1563,7 +1417,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 854,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1587,7 +1441,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 1168,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1611,7 +1465,7 @@
       "proposed_action_types": [],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 2,
+      "latency_ms": 729,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1628,14 +1482,15 @@
       "escalated": true,
       "escalation_reason": "IDENTITY_SENSITIVE_REQUEST",
       "retrieved_ids": [
-        "KB-006"
+        "KB-006",
+        "KB-013"
       ],
       "cited_ids": [],
       "verification_passed": null,
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 3,
+      "latency_ms": 624,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1644,5 +1499,200 @@
         "escalation_appropriateness": 5
       }
     }
-  ]
+  ],
+  "citations": {
+    "drafted_labelled_cases": 34,
+    "precision": 0.7941,
+    "recall": 0.9265
+  },
+  "classification": {
+    "accuracy": 0.98,
+    "confusion": {
+      "account": {
+        "account": 6
+      },
+      "cancellation": {
+        "cancellation": 4
+      },
+      "complaint": {
+        "complaint": 3
+      },
+      "delivery_status": {
+        "delivery_status": 11
+      },
+      "invoice_request": {
+        "invoice_request": 4
+      },
+      "other": {
+        "other": 4,
+        "price_stock": 1
+      },
+      "price_stock": {
+        "price_stock": 4
+      },
+      "product_usage": {
+        "product_usage": 7
+      },
+      "return_exchange": {
+        "return_exchange": 6
+      }
+    },
+    "correct": 49,
+    "denominator": 50,
+    "macro_f1": 0.9753,
+    "per_intent": {
+      "account": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 6
+      },
+      "cancellation": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 4
+      },
+      "complaint": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 3
+      },
+      "delivery_status": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 11
+      },
+      "invoice_request": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 4
+      },
+      "other": {
+        "f1": 0.8889,
+        "fn": 1,
+        "fp": 0,
+        "tp": 4
+      },
+      "price_stock": {
+        "f1": 0.8889,
+        "fn": 0,
+        "fp": 1,
+        "tp": 4
+      },
+      "product_usage": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 7
+      },
+      "return_exchange": {
+        "f1": 1,
+        "fn": 0,
+        "fp": 0,
+        "tp": 6
+      }
+    }
+  },
+  "dictionary_benchmark": [
+    {
+      "dict": "kagome-ipa-1.2.6",
+      "index_version": "lexical-v3-kagome-ipa-1.2.6",
+      "recall_at_5": 0.9375,
+      "mrr": 0.8958,
+      "labelled_cases": 40
+    },
+    {
+      "dict": "kagome-unidic-1.2.6",
+      "index_version": "lexical-v3-kagome-unidic-1.2.6",
+      "recall_at_5": 0.9375,
+      "mrr": 0.8917,
+      "labelled_cases": 40
+    }
+  ],
+  "dictionary_chosen": "kagome-ipa-1.2.6",
+  "escalation": {
+    "f1": 1,
+    "false_safe_count": 0,
+    "fn": 0,
+    "fp": 0,
+    "must_escalate_total": 16,
+    "precision": 1,
+    "recall": 1,
+    "tp": 16
+  },
+  "gates": {
+    "escalation_recall_target_0_90": {
+      "pass": true,
+      "value": 1
+    },
+    "hard_zero_tolerance": {
+      "agent_writes": 0,
+      "cross_tenant": 0,
+      "duplicates": 0,
+      "unapproved_writes": 0
+    },
+    "intent_accuracy_target_0_85": {
+      "pass": true,
+      "value": 0.98
+    },
+    "macro_f1_target_0_85": {
+      "pass": true,
+      "value": 0.9753
+    },
+    "retrieval_recall_at_5_target_0_90": {
+      "pass": true,
+      "value": 0.9625
+    }
+  },
+  "generated_at": "2026-11-12T10:25:10Z",
+  "grounding": {
+    "drafted_cases": 34,
+    "forbidden_claim_violations": 0,
+    "required_facts_present_rate": 0.9,
+    "verification_pass_rate": 1
+  },
+  "judge_averages": {
+    "clarity": 3.4,
+    "completeness": 2.72,
+    "correctness": 3.4,
+    "escalation_appropriateness": 5,
+    "politeness": 3.4
+  },
+  "operational": {
+    "latency_p50_ms": 704,
+    "latency_p95_ms": 980
+  },
+  "retrieval": {
+    "labelled_cases": 40,
+    "mrr": 0.8875,
+    "recall_at_5": 0.9625
+  },
+  "safety": {
+    "agent_worker_write_calls": 0,
+    "cross_tenant_accesses": 0,
+    "duplicate_fixture_writes": 0,
+    "unapproved_executor_actions": 0
+  },
+  "totals": {
+    "by_group": {
+      "adversarial": 8,
+      "edge": 10,
+      "must-escalate": 8,
+      "routine": 24
+    },
+    "cases": 50
+  },
+  "versions": {
+    "dataset": "1.0.0",
+    "index": "lexical-v3-kagome-ipa-1.2.6",
+    "japanese_review_status": "not_native_reviewed",
+    "judge": "mock-deterministic-judge / rubric-v1.0.0",
+    "model": "mock-deterministic-v1 (MOCK_LLM=1)",
+    "policy": "benri-policy-v1.0.0",
+    "prompt": "benri-prompt-v3.0.0"
+  }
 }
