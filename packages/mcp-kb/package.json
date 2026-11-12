@@ -1,0 +1,14 @@
+{
+  "name": "@benri/mcp-kb",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@benri/db": "*",
+    "@benri/retrieval": "*",
+    "@modelcontextprotocol/server": "^2.4.0",
+    "zod": "^4.0.0"
+  }
+}
