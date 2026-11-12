@@ -1,66 +1,64 @@
-# Benri Agent — Evaluation Methodology
+# Benri Agent — evaluation methodology (v3)
 
-Implements SPEC §11. The harness is independent of the web UI and runs with
-deterministic mocks (`MOCK_LLM=1`) so CI is reproducible.
+## Gold dataset
 
-## Dataset
-
-`evals/dataset/gold.jsonl` — 50 cases, dataset version 1.0.0:
-24 routine / 10 edge / 8 must-escalate / 8 adversarial. Each case carries
-expected intent + urgency, escalation boolean + reason code, relevant
-article IDs, required/forbidden facts, expected allowed actions, and
-adversarial flags. All content is synthetic for the fictional Hinata Store.
-**Japanese review status: not_native_reviewed** (no reviewer available);
-this is recorded in the dataset README and in every report.
+`evals/dataset/gold.jsonl` — 50 cases (24 routine / 10 edge / 8
+must-escalate / 8 adversarial), dataset version 1.0.0, **byte-identical to
+the v2 dataset** (sha256 recorded in VERIFICATION-REPORT.md). Each case
+labels the expected intent, urgency, escalation decision + reason code,
+relevant article ids, required facts, forbidden claims, and allowed
+actions. Japanese text is synthetic and **not native-reviewed**.
 
 ## Runner
 
-`npm run eval` (`evals/runner/src/run-eval.ts`) seeds a throwaway database
-from the same fixtures, runs the real agent pipeline per case (mock LLM,
-direct tool gateway — the same code path as the MCP gateway, which is
-covered separately by stdio integration tests), and computes:
+`cmd/eval` (Go) exercises the production `internal/` packages — the real
+pipeline, real store, real verifier — against a throwaway seeded SQLite
+database, with the deterministic mock LLM and the direct tool gateway.
+Reports (JSON + Markdown) land in `evals/reports/` with dataset, prompt,
+policy, model, and index versions and explicit denominators for every
+metric. The eval also registers its report into the main database (when
+present) for the Admin UI.
 
-- Classification: accuracy, macro-F1, per-intent P/R/F1, confusion matrix.
-- Escalation: precision/recall/F1 with raw TP/FP/FN counts and the
-  false-safe count (must-escalate cases that received a draft).
-- Retrieval: Recall@5 and MRR over the 40 cases with relevance labels.
-- Citations: precision/recall over drafted labelled cases. Note: gold
-  relevance labels are mostly single-article, while a correct draft may
-  legitimately cite a sibling procedure article — citation precision is
-  therefore a strict lower bound, reported as measured.
-- Grounding: verification pass rate, required-fact presence, forbidden-claim
-  violations (numeric claims are matched with a digit-boundary rule so a
-  correct "2.5リットル" is not counted as the forbidden "5リットル").
-- Safety: agent-worker writes, unapproved executor actions, duplicate
-  writes, cross-tenant accesses — all must be zero (hard gates).
-- Operational: in-process mock latency p50/p95 (not a production figure).
-- Judge: mock deterministic judge (`evals/judges/judge.ts`, rubric v1.0.0)
-  scores politeness/clarity/correctness/completeness/escalation
-  appropriateness. Live judge runs are a separate non-CI command by design.
+## Dictionary benchmark (§8.2)
 
-Reports are written to `evals/reports/latest.json` and `latest.md` with
-dataset/prompt/policy/model/index/judge versions and all denominators.
+Before the gold run, the CLI benchmarks Kagome IPA vs UniDic (Search
+mode) over the 40 labelled cases: Recall@5 and MRR per dictionary. The
+winner runs the gold set and is named in the index version string. 2026-11-12
+result: Recall@5 tied at 0.9375; IPA won on MRR (0.8958 vs 0.8917) →
+IPAdic.
 
-## Gates (SPEC §11.3)
+## Metrics
 
-Hard zero-tolerance: agent writes, unapproved actions, duplicates,
-cross-tenant — runner exits non-zero if violated. Soft targets (reported,
-not hidden): escalation recall ≥ 0.90, intent accuracy ≥ 0.85, macro-F1
-≥ 0.85, retrieval Recall@5 ≥ 0.90.
+- Classification accuracy + macro-F1 + confusion matrix (predicted intent
+  read from the persisted classify checkpoint).
+- Escalation precision/recall/F1 + false-safe count (a false-safe — a case
+  that should escalate but was drafted — is the worst error class here).
+- Retrieval Recall@5 + MRR over the 40 labelled cases.
+- Citation precision/recall over drafted labelled cases.
+- Verification pass rate over drafted cases; required-facts presence;
+  forbidden-claim violations with a digit-boundary guard (a forbidden
+  "5リットル" must not match inside a correct "2.5リットル").
+- Mock-judge averages (rubric `rubric-v1.0.0`, `evals/rubrics/`): a
+  quality signal, never a security gate.
+- Latency p50/p95 of the in-process mock pipeline — NOT production
+  figures.
 
-## Negative controls (SPEC §11.5)
+## Gates (§11.3)
 
-Implemented as reproducible tests, not as a manufactured failing CI claim:
-retrieval disabled → safe escalation; gateway down → bounded
-`GATEWAY_UNAVAILABLE`; Kairo exporter down → run still completes; worker
-crash after a checkpoint → resume without duplicated steps; executor
-ambiguous outcome → `unknown`, no blind retry; malformed tool output hook
-in the pipeline. See the vitest suites.
+Escalation recall ≥ 0.90 · intent accuracy ≥ 0.85 · macro-F1 ≥ 0.85 ·
+Recall@5 ≥ 0.90 · hard zeros for agent writes, unapproved executor
+actions, duplicate fixture writes, and cross-tenant accesses. The eval
+CLI exits non-zero when any gate fails; CI runs it as the mock eval gate.
 
-## Calibration note
+## Negative controls (§11.5)
 
-The lexical evidence gate (content-coverage thresholds 0.18 / 0.12
-intent-matched) and classifier keyword sets were calibrated against this
-labelled set, as SPEC §5.4/§8.3 prescribe. The overseas-shipping rule is
-evidence-driven: a scope term (海外) that no retrieved article mentions has
-no grounded answer and escalates as `NO_RELEVANT_KB_EVIDENCE`.
+Implemented as Go tests/assertions: retrieval disabled → the same routine
+inquiry escalates INSUFFICIENT_EVIDENCE; gateway down → bounded
+GATEWAY_UNAVAILABLE failure; crash after a step → resume completes
+without duplicating steps; ticket tool refuses unapproved actions;
+ambiguous ticket outcome → job `unknown`, never retried.
+
+## Honesty
+
+Mock-LLM numbers measure the deterministic mock pipeline. They are not
+live-model results, and no report in this repo presents them as such.
