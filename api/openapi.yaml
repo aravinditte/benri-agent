@@ -1,0 +1,748 @@
+openapi: 3.1.0
+info:
+  title: Benri Agent API
+  version: 3.0.0
+  description: >-
+    Canonical API contract for the Benri Agent Go API (SPEC v3 §12.1).
+    Go server types are generated with oapi-codegen and TypeScript types with
+    openapi-typescript from THIS file. Do not hand-maintain parallel DTOs.
+servers:
+  - url: http://localhost:8080
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      security: []
+      summary: Health and mode label (mock labelled as mock)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Health' }
+  /auth/login:
+    post:
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LoginResponse' }
+        '401': { $ref: '#/components/responses/Error' }
+  /auth/logout:
+    post:
+      operationId: logout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ok' }
+  /auth/session:
+    get:
+      operationId: getSession
+      responses:
+        '200':
+          description: Current session user
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionResponse' }
+        '401': { $ref: '#/components/responses/Error' }
+  /inquiries:
+    get:
+      operationId: listInquiries
+      parameters:
+        - name: state
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Tenant-scoped inquiries
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InquiryList' }
+        '401': { $ref: '#/components/responses/Error' }
+    post:
+      operationId: createInquiry
+      summary: Local/dev only; body is redacted before persistence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateInquiryRequest' }
+      responses:
+        '201':
+          description: Created (redacted body stored)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InquiryResponse' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /inquiries/{id}:
+    get:
+      operationId: getInquiry
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Inquiry with its runs
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InquiryDetail' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /inquiries/{id}/runs:
+    post:
+      operationId: createRun
+      summary: Idempotent run request (Idempotency-Key header or request_key)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateRunRequest' }
+      responses:
+        '201':
+          description: Run queued (or the existing run for the idempotency key)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateRunResponse' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /runs/{id}:
+    get:
+      operationId: getRun
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Run summary, steps, tool calls, draft, verification, trace metadata
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunDetail' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /drafts/{id}:
+    get:
+      operationId: getDraft
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Draft with proposed actions
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DraftDetail' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /drafts/{id}/revisions:
+    post:
+      operationId: createDraftRevision
+      summary: Creates a new immutable revision and triggers verification
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RevisionRequest' }
+      responses:
+        '201':
+          description: New revision created and verified
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RevisionResponse' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /drafts/{id}/approve:
+    post:
+      operationId: approveDraft
+      summary: Requires the exact revision ID and explicitly selected action IDs
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ApproveRequest' }
+      responses:
+        '200':
+          description: Approval persisted and execution jobs enqueued atomically
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApproveResponse' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /drafts/{id}/reject:
+    post:
+      operationId: rejectDraft
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RejectRequest' }
+      responses:
+        '200':
+          description: Rejected
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ok' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /tickets:
+    get:
+      operationId: listTickets
+      responses:
+        '200':
+          description: Tenant fixture tickets
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TicketList' }
+        '401': { $ref: '#/components/responses/Error' }
+  /outbox:
+    get:
+      operationId: listOutbox
+      responses:
+        '200':
+          description: Tenant demo outbox (simulated delivery only)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OutboxList' }
+        '401': { $ref: '#/components/responses/Error' }
+  /kb/articles:
+    get:
+      operationId: listKbArticles
+      responses:
+        '200':
+          description: Tenant KB articles
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ArticleList' }
+        '401': { $ref: '#/components/responses/Error' }
+    post:
+      operationId: createKbArticle
+      summary: Admin only
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateArticleRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ArticleResponse' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /kb/articles/{id}:
+    patch:
+      operationId: updateKbArticle
+      summary: Admin only
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateArticleRequest' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ArticleResponse' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /kb/reindex:
+    post:
+      operationId: reindexKb
+      summary: Admin only; versioned index build
+      responses:
+        '200':
+          description: Reindexed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReindexResponse' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+  /evals/runs:
+    get:
+      operationId: listEvalRuns
+      responses:
+        '200':
+          description: Evaluation runs
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EvalRunList' }
+        '401': { $ref: '#/components/responses/Error' }
+  /evals/runs/{id}:
+    get:
+      operationId: getEvalRun
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Evaluation run with report
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EvalRunDetail' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+  /audit:
+    get:
+      operationId: listAudit
+      parameters:
+        - name: entity_type
+          in: query
+          schema: { type: string }
+        - name: entity_id
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Tenant audit events
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditList' }
+        '401': { $ref: '#/components/responses/Error' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+  responses:
+    Error:
+      description: Stable error envelope
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+    Ok:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
+    Health:
+      type: object
+      required: [status, mode, llm_label]
+      properties:
+        status: { type: string }
+        mode: { type: string, enum: [mock, live] }
+        llm_label: { type: string }
+    User:
+      type: object
+      required: [id, email, role, tenant_id]
+      properties:
+        id: { type: string }
+        email: { type: string }
+        role: { type: string, enum: [operator, admin] }
+        tenant_id: { type: string }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string }
+        password: { type: string }
+    LoginResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token: { type: string }
+        user: { $ref: '#/components/schemas/User' }
+    SessionResponse:
+      type: object
+      required: [user]
+      properties:
+        user: { $ref: '#/components/schemas/User' }
+    Inquiry:
+      type: object
+      required: [id, tenant_id, subject, redacted_body, status, created_at]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        source: { type: string }
+        subject: { type: string }
+        redacted_body: { type: string }
+        normalized_body_hash: { type: string }
+        order_no_hint: { type: [string, 'null'] }
+        status: { type: string }
+        created_at: { type: string }
+    InquiryList:
+      type: object
+      required: [inquiries]
+      properties:
+        inquiries:
+          type: array
+          items: { $ref: '#/components/schemas/Inquiry' }
+    CreateInquiryRequest:
+      type: object
+      required: [subject, body]
+      properties:
+        subject: { type: string }
+        body: { type: string }
+        order_no_hint: { type: string }
+    InquiryResponse:
+      type: object
+      required: [inquiry]
+      properties:
+        inquiry: { $ref: '#/components/schemas/Inquiry' }
+    InquiryDetail:
+      type: object
+      required: [inquiry, runs]
+      properties:
+        inquiry: { $ref: '#/components/schemas/Inquiry' }
+        runs:
+          type: array
+          items: { $ref: '#/components/schemas/RunSummary' }
+    CreateRunRequest:
+      type: object
+      properties:
+        request_key: { type: string }
+    CreateRunResponse:
+      type: object
+      required: [run_id, state]
+      properties:
+        run_id: { type: string }
+        state: { type: string }
+    RunSummary:
+      type: object
+      required: [id, tenant_id, inquiry_id, state, created_at]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        inquiry_id: { type: string }
+        state: { type: string }
+        model_route: { type: [string, 'null'] }
+        prompt_version: { type: [string, 'null'] }
+        trace_id: { type: [string, 'null'] }
+        escalation_reason: { type: [string, 'null'] }
+        failure_code: { type: [string, 'null'] }
+        created_at: { type: string }
+    RunStep:
+      type: object
+      required: [id, run_id, step_key, attempt, state]
+      properties:
+        id: { type: string }
+        run_id: { type: string }
+        step_key: { type: string }
+        attempt: { type: integer }
+        state: { type: string }
+        output_redacted: { type: [string, 'null'] }
+        error_code: { type: [string, 'null'] }
+        duration_ms: { type: [integer, 'null'] }
+        trace_id: { type: [string, 'null'] }
+        span_id: { type: [string, 'null'] }
+    ToolCall:
+      type: object
+      required: [id, server, tool, risk_level, status]
+      properties:
+        id: { type: string }
+        server: { type: string }
+        tool: { type: string }
+        risk_level: { type: string }
+        args_redacted: { type: [string, 'null'] }
+        status: { type: string }
+        latency_ms: { type: [integer, 'null'] }
+    FactualReference:
+      type: object
+      required: [factKey, normalizedValue, sourceArticleId, sourceChunkId]
+      properties:
+        factKey: { type: string }
+        normalizedValue: { type: string }
+        sourceArticleId: { type: string }
+        sourceChunkId: { type: string }
+    VerificationCheck:
+      type: object
+      required: [name, passed]
+      properties:
+        name: { type: string }
+        passed: { type: boolean }
+        detail: { type: string }
+    Verification:
+      type: object
+      required: [passed, checks, verified_at, verifier_version]
+      properties:
+        passed: { type: boolean }
+        checks:
+          type: array
+          items: { $ref: '#/components/schemas/VerificationCheck' }
+        verified_at: { type: string }
+        verifier_version: { type: string }
+    Draft:
+      type: object
+      required: [id, tenant_id, run_id, revision, body, cited_article_ids, content_hash, state, created_at]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        run_id: { type: string }
+        revision: { type: integer }
+        body: { type: string }
+        cited_article_ids:
+          type: array
+          items: { type: string }
+        factual_references:
+          type: array
+          items: { $ref: '#/components/schemas/FactualReference' }
+        verification:
+          anyOf:
+            - { $ref: '#/components/schemas/Verification' }
+            - { type: 'null' }
+        content_hash: { type: string }
+        state: { type: string }
+        created_at: { type: string }
+    ProposedAction:
+      type: object
+      required: [id, tenant_id, draft_id, action_type, payload_hash, state]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        draft_id: { type: string }
+        run_id: { type: [string, 'null'] }
+        action_type: { type: string }
+        canonical_payload: { type: object, additionalProperties: true }
+        payload_hash: { type: string }
+        state: { type: string }
+        created_at: { type: string }
+    Escalation:
+      type: object
+      required: [reason_code, summary]
+      properties:
+        reason_code: { type: string }
+        summary: { type: string }
+    Evidence:
+      type: object
+      required: [article_id, title, excerpt]
+      properties:
+        article_id: { type: string }
+        title: { type: string }
+        excerpt: { type: string }
+    RunDetail:
+      type: object
+      required: [run, steps, tool_calls, draft, proposed_actions, escalation, evidence]
+      properties:
+        run: { $ref: '#/components/schemas/RunSummary' }
+        steps:
+          type: array
+          items: { $ref: '#/components/schemas/RunStep' }
+        tool_calls:
+          type: array
+          items: { $ref: '#/components/schemas/ToolCall' }
+        draft:
+          anyOf:
+            - { $ref: '#/components/schemas/Draft' }
+            - { type: 'null' }
+        proposed_actions:
+          type: array
+          items: { $ref: '#/components/schemas/ProposedAction' }
+        escalation:
+          anyOf:
+            - { $ref: '#/components/schemas/Escalation' }
+            - { type: 'null' }
+        evidence:
+          type: array
+          items: { $ref: '#/components/schemas/Evidence' }
+    DraftDetail:
+      type: object
+      required: [draft, proposed_actions]
+      properties:
+        draft: { $ref: '#/components/schemas/Draft' }
+        proposed_actions:
+          type: array
+          items: { $ref: '#/components/schemas/ProposedAction' }
+    RevisionRequest:
+      type: object
+      required: [body]
+      properties:
+        body: { type: string }
+    RevisionResponse:
+      type: object
+      required: [draft, verification]
+      properties:
+        draft: { $ref: '#/components/schemas/Draft' }
+        verification: { $ref: '#/components/schemas/Verification' }
+    ApproveRequest:
+      type: object
+      required: [revision, selected_action_ids]
+      properties:
+        revision: { type: integer }
+        selected_action_ids:
+          type: array
+          items: { type: string }
+    ApproveResponse:
+      type: object
+      required: [approval_id, execution_job_ids]
+      properties:
+        approval_id: { type: string }
+        execution_job_ids:
+          type: array
+          items: { type: string }
+    RejectRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason: { type: string }
+    Ticket:
+      type: object
+      required: [id, tenant_id, inquiry_id, status]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        inquiry_id: { type: string }
+        status: { type: string }
+        priority: { type: string }
+        source_action_id: { type: [string, 'null'] }
+        created_at: { type: string }
+    TicketList:
+      type: object
+      required: [tickets]
+      properties:
+        tickets:
+          type: array
+          items: { $ref: '#/components/schemas/Ticket' }
+    OutboxMessage:
+      type: object
+      required: [id, tenant_id, inquiry_id, draft_revision, body, delivery_state, delivery_label]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        inquiry_id: { type: string }
+        draft_revision: { type: integer }
+        body: { type: string }
+        delivery_state: { type: string }
+        delivery_label: { type: string }
+        source_action_id: { type: [string, 'null'] }
+        created_at: { type: string }
+    OutboxList:
+      type: object
+      required: [outbox]
+      properties:
+        outbox:
+          type: array
+          items: { $ref: '#/components/schemas/OutboxMessage' }
+    Article:
+      type: object
+      required: [id, tenant_id, title, intent_tags, body, version, status, updated_at]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        title: { type: string }
+        body: { type: string }
+        intent_tags:
+          type: array
+          items: { type: string }
+        version: { type: integer }
+        status: { type: string }
+        updated_at: { type: string }
+    ArticleList:
+      type: object
+      required: [articles]
+      properties:
+        articles:
+          type: array
+          items: { $ref: '#/components/schemas/Article' }
+    CreateArticleRequest:
+      type: object
+      required: [title, body]
+      properties:
+        id: { type: string, description: Optional; the API assigns the next KB id when omitted }
+
+        title: { type: string }
+        body: { type: string }
+        intent_tags:
+          type: array
+          items: { type: string }
+    UpdateArticleRequest:
+      type: object
+      properties:
+        title: { type: string }
+        body: { type: string }
+        status: { type: string }
+        intent_tags:
+          type: array
+          items: { type: string }
+    ArticleResponse:
+      type: object
+      required: [article]
+      properties:
+        article: { $ref: '#/components/schemas/Article' }
+    ReindexResponse:
+      type: object
+      required: [ok, index_version]
+      properties:
+        ok: { type: boolean }
+        index_version: { type: string }
+    EvalRunSummary:
+      type: object
+      required: [id, created_at]
+      properties:
+        id: { type: string }
+        dataset_version: { type: [string, 'null'] }
+        prompt_version: { type: [string, 'null'] }
+        model: { type: [string, 'null'] }
+        index_version: { type: [string, 'null'] }
+        created_at: { type: string }
+    EvalRunList:
+      type: object
+      required: [eval_runs]
+      properties:
+        eval_runs:
+          type: array
+          items: { $ref: '#/components/schemas/EvalRunSummary' }
+    EvalRunDetail:
+      type: object
+      required: [eval_run, report]
+      properties:
+        eval_run: { $ref: '#/components/schemas/EvalRunSummary' }
+        report: { type: [object, 'null'], additionalProperties: true }
+    AuditEvent:
+      type: object
+      required: [id, tenant_id, actor_type, action, entity_type, entity_id, created_at]
+      properties:
+        id: { type: string }
+        tenant_id: { type: string }
+        actor_type: { type: string }
+        actor_id: { type: [string, 'null'] }
+        action: { type: string }
+        entity_type: { type: string }
+        entity_id: { type: string }
+        trace_id: { type: [string, 'null'] }
+        created_at: { type: string }
+    AuditList:
+      type: object
+      required: [audit_events]
+      properties:
+        audit_events:
+          type: array
+          items: { $ref: '#/components/schemas/AuditEvent' }
