@@ -1,0 +1,50 @@
+# Benri Agent — Compose stack (SPEC §13/§15.1).
+# STATUS: provided, UNEXECUTED on the build machine (no Docker available).
+# The locally verified path is the sqlite store (see README).
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: benri
+      POSTGRES_PASSWORD: benri
+      POSTGRES_DB: benri
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./packages/db/src/pg-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./packages/db/src/pg-roles.sql:/docker-entrypoint-initdb.d/02-roles.sql:ro
+    ports: ["5432:5432"]
+  api:
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    environment:
+      DATABASE_URL: postgres://benri:benri@postgres:5432/benri
+      BENRI_DB_PATH: /data/benri.sqlite
+      MOCK_LLM: "1"
+      DEMO_MODE: "1"
+      API_PORT: "4100"
+    volumes: [benri-data:/data]
+    ports: ["4100:4100"]
+    depends_on: [postgres]
+  agent-worker:
+    build: { context: ., dockerfile: apps/agent-worker/Dockerfile }
+    environment:
+      BENRI_DB_PATH: /data/benri.sqlite
+      MOCK_LLM: "1"
+      BENRI_USE_MCP: "1"
+    volumes: [benri-data:/data]
+    depends_on: [api]
+  executor-worker:
+    build: { context: ., dockerfile: apps/executor-worker/Dockerfile }
+    environment:
+      BENRI_DB_PATH: /data/benri.sqlite
+      BENRI_USE_MCP: "1"
+    volumes: [benri-data:/data]
+    depends_on: [api]
+  web:
+    build: { context: ., dockerfile: apps/web/Dockerfile }
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4100
+    ports: ["3000:3000"]
+    depends_on: [api]
+volumes:
+  pgdata:
+  benri-data:
