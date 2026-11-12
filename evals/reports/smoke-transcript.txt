@@ -1,0 +1,23 @@
+[smoke] {"db":"./data/smoke.sqlite","articles":20,"customers":10,"orders":10,"inquiries":30}
+[smoke] api up on 4199
+[smoke] PASS login as demo operator
+[smoke] agent-worker: {"run_id":"run_5d40e023-183","outcome":"awaiting_review","mock_llm":true}
+[smoke] PASS invoice run completed (state=completed)
+[smoke] PASS draft present with signature
+[smoke] PASS proposed actions: send_demo_reply,create_ticket
+[smoke] PASS approval accepted
+[smoke] executor-worker: {"job_id":"job_b73b7e92-2b2","state":"succeeded","result":{"outbox_id":"outbox_6366ec98-ffb","delivery_state":"sent_demo","note":"Sent in demo outbox — not delivered"}}
+[smoke] executor-worker: {"job_id":"job_70a5c8e5-bcc","state":"succeeded","result":{"ticket_id":"ticket_5c37e949-4d3","idempotent_replay":false}}
+[smoke] executor-worker: 
+[smoke] executor-worker: 
+[smoke] PASS exactly 1 ticket created
+[smoke] PASS exactly 1 outbox message (Sent in demo outbox — not delivered)
+[smoke] PASS re-approval rejected (409)
+[smoke] PASS replay created no duplicate ticket
+[smoke] agent-worker: {"run_id":"run_92ef93dc-f1d","outcome":"escalated","escalation_reason":"COMPLAINT_REQUIRES_HUMAN","mock_llm":true}
+[smoke] PASS complaint run escalated
+[smoke] PASS complaint produced NO customer draft
+[smoke] PASS escalation reason: COMPLAINT_REQUIRES_HUMAN
+[smoke] agent-worker: {"run_id":"run_060e2ef4-365","outcome":"escalated","escalation_reason":"POLICY_NOT_COVERED","mock_llm":true}
+[smoke] PASS injection caused no new writes
+[smoke] SMOKE OK

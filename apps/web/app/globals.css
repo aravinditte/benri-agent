@@ -1,0 +1,29 @@
+:root{--bg:#f6f7f8;--panel:#fff;--border:#d9dde3;--text:#171a1e;--muted:#667085;--accent:#0f766e;--accent2:#115e59;--danger:#b42318;--warn:#b54708;--warn-bg:#fffaeb;--ok:#027a48}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,"Hiragino Sans","Noto Sans JP",sans-serif;font-size:14px;line-height:1.5}
+a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+.topnav{position:sticky;top:0;z-index:20;background:#111827;color:#fff;display:flex;align-items:center;gap:16px;padding:0 16px;height:48px}
+.topnav .brand{font-weight:700;color:#fff;white-space:nowrap}.topnav nav{display:flex;gap:14px}.topnav nav a{color:#d1d5db;font-size:13px}.topnav nav a:hover{color:#fff;text-decoration:none}
+.topnav .spacer{flex:1}.topnav .user{font-size:12px;color:#d1d5db;white-space:nowrap}
+.btn{background:var(--accent);color:#fff;border:1px solid var(--accent);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:13px;white-space:nowrap}.btn:hover{background:var(--accent2)}.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.secondary{background:#fff;color:var(--text);border-color:var(--border)}.btn.secondary:hover{background:#f2f4f7}.btn.danger{background:var(--danger);border-color:var(--danger)}.btn.small{padding:4px 8px;font-size:12px}
+.btn.ghost{background:transparent;border-color:transparent;color:#e5e7eb}.btn.ghost:hover{background:#1f2937}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px}
+.card h2,.card h3{margin:0 0 10px}.card h2{font-size:16px}.card h3{font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--border);vertical-align:top}th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.02em}
+tr.clickable{cursor:pointer}tr.clickable:hover{background:#f9fafb}
+.badge{display:inline-block;padding:2px 7px;border-radius:999px;background:#eef2f7;border:1px solid var(--border);font-size:12px;white-space:nowrap}.badge.warn{background:var(--warn-bg);color:var(--warn);border-color:#fedf89}.badge.danger{background:#fef3f2;color:var(--danger)}.badge.ok{background:#ecfdf3;color:var(--ok)}
+.input,textarea.input,select.input{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font:inherit}textarea.input{min-height:140px;resize:vertical}
+label{display:block;font-size:12px;font-weight:600;color:#344054;margin:10px 0 4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.muted{color:var(--muted);font-size:12px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;word-break:break-all}
+.error{background:#fef3f2;border:1px solid #fecdca;color:var(--danger);padding:10px 12px;border-radius:6px;margin-bottom:12px}.success{background:#ecfdf3;border:1px solid #a6f4c5;color:#067647;padding:10px 12px;border-radius:6px;margin-bottom:12px}.warnbox{background:var(--warn-bg);border:1px solid #fedf89;padding:12px;border-radius:6px}
+pre{white-space:pre-wrap;word-break:break-word;background:#f9fafb;border:1px solid var(--border);border-radius:6px;padding:10px;font-size:12px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.tab{padding:6px 10px;border:1px solid var(--border);background:#fff;border-radius:6px;cursor:pointer}.tab.active{background:#111827;color:#fff;border-color:#111827}
+.langtoggle{display:flex;border:1px solid #374151;border-radius:6px;overflow:hidden}.langtoggle button{background:transparent;color:#d1d5db;border:0;padding:4px 8px;cursor:pointer;font-size:12px}.langtoggle button.active{background:#fff;color:#111827;font-weight:700}
+.timeline{list-style:none;padding:0;margin:0}.timeline li{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid #eef0f3}.timeline li:last-child{border-bottom:0}
+.loginwrap{max-width:420px;margin:48px auto}
+
+/* Audit filter bar (Admin) */
+.filter-bar { display: flex; gap: 8px; align-items: center; margin: 12px 0; flex-wrap: wrap; }
+.filter-input { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 180px; }

@@ -1,0 +1,24 @@
+{
+  "name": "benri-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "seed": "tsx scripts/seed.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "api": "tsx apps/api/src/server.ts",
+    "agent-worker": "tsx apps/agent-worker/src/main.ts",
+    "executor-worker": "tsx apps/executor-worker/src/main.ts",
+    "eval": "tsx evals/runner/src/run-eval.ts",
+    "smoke": "tsx scripts/smoke.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "engines": { "node": ">=22.5.0" }
+}

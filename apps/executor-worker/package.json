@@ -1,0 +1,11 @@
+{
+  "name": "@benri/executor-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/main.ts",
+  "dependencies": {
+    "@benri/db": "*", "@benri/mcp-ticket": "*",
+    "@modelcontextprotocol/client": "^2.4.0"
+  }
+}
