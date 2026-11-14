@@ -17,6 +17,10 @@ type SQLiteStore struct {
 	role Role
 	q    querier // db or active tx
 	tx   bool
+	// dialect is "sqlite" for the local store and "postgres" when this
+	// implementation is reused behind PgStore. Keeping the repository logic
+	// in one place prevents the two database paths from drifting.
+	dialect string
 }
 
 type querier interface {
@@ -58,7 +62,7 @@ func OpenSQLite(path string, role Role) (*SQLiteStore, error) {
 	if _, err := db.Exec(sqliteDDL); err != nil {
 		return nil, err
 	}
-	return &SQLiteStore{db: db, role: role, q: db}, nil
+	return &SQLiteStore{db: db, role: role, q: db, dialect: "sqlite"}, nil
 }
 
 func (s *SQLiteStore) Role() Role { return s.role }
@@ -77,7 +81,11 @@ func (s *SQLiteStore) Transaction(fn func(tx Repository) error) error {
 	if err != nil {
 		return err
 	}
-	child := &SQLiteStore{db: s.db, role: s.role, q: t, tx: true}
+	var q querier = t
+	if s.dialect == "postgres" {
+		q = postgresQuerier{q: t}
+	}
+	child := &SQLiteStore{db: s.db, role: s.role, q: q, tx: true, dialect: s.dialect}
 	if err := fn(child); err != nil {
 		_ = t.Rollback()
 		return err

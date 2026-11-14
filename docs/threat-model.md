@@ -28,8 +28,7 @@ the exact draft revision and exact action payload hashes.**
   entailment of free-form sentences — human review remains mandatory.
 - Mechanical Japanese style checks are not native-speaker review; the
   fixtures/gold data are labelled `not_native_reviewed`.
-- The PostgreSQL role grants are provided but unverified on the build
-  machine; the verified enforcement is the capability-scoped store handle
-  layer exercised by the Go test suite.
+- PostgreSQL role grants are exercised by the Compose services; application
+  capability guards are also tested independently with every store role.
 - Demo auth/users are for local demonstration; production deployment must
   replace them and terminate TLS at a real proxy.

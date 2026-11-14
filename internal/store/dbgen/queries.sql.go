@@ -145,8 +145,8 @@ type GetInquiryParams struct {
 }
 
 // sqlc query set for the PostgreSQL path (SPEC §13). These mirror the
-// locally verified SQLite statements. STATUS: provided, UNVERIFIED (no
-// PostgreSQL on this machine); generation with sqlc is verified.
+// repository statements shared with the SQLite implementation. Verified with
+// PostgreSQL 16 through Docker Compose and the repository contract test.
 func (q *Queries) GetInquiry(ctx context.Context, arg GetInquiryParams) (Inquiry, error) {
 	row := q.db.QueryRow(ctx, getInquiry, arg.TenantID, arg.ID)
 	var i Inquiry

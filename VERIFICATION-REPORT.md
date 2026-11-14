@@ -1,6 +1,6 @@
 # Benri Agent — Verification Report (v3.0, Go + TypeScript)
 
-Build: Build Spec v3.0 rebuild, 2026-11-12. The v2 report is archived at
+Build: Build Spec v3.0 rebuild, 2026-11-14. The v2 report is archived at
 `docs/verification-report-v2.md`. Everything below was executed on this
 machine unless it is listed under **NOT verified**.
 
@@ -14,8 +14,9 @@ machine unless it is listed under **NOT verified**.
   **v1.8.0** (stdio spike: negotiated protocol version **2026-07-28**),
   kagome/v2 v2.11.1 + kagome-dict/ipa & uni v1.2.6, otel v1.47.0,
   modernc.org/sqlite v1.62.0 (pure Go, no cgo), x/text v0.44.0.
-- Web (exact pins in web/package.json): next 15.5.29, react 19.1.0,
-  typescript 5.9.3, openapi-typescript 7.13.0.
+- Web (exact pins in web/package.json): Next 16.4.6, React 19.3.1,
+  TypeScript 5.9.3, ESLint 10.15.0, Vitest 5.1.0, and
+  openapi-typescript 7.13.0. `npm audit` reports zero vulnerabilities.
 
 ## Verification commands — real outputs
 
@@ -24,11 +25,16 @@ machine unless it is listed under **NOT verified**.
 | `gofmt -l cmd internal` | clean (no files listed) |
 | `go vet ./...` | clean |
 | `go build ./...` | OK |
-| `go test ./... -count=1` | **35/35 PASS, 0 fail** (8 packages) |
-| `CGO_ENABLED=1 go test -race ./... -count=1` | **all 8 packages PASS** |
+| `go test ./... -count=1` | **41 test functions PASS, 0 fail** |
+| `go test -race ./... -count=1` | PASS in the Linux build container |
 | `make generate-check` | `generate-check: no drift` (oapi-codegen + openapi-typescript + sqlc regenerated and diffed) |
 | web `npm run typecheck` | clean |
+| web `npm run lint` | clean, zero warnings |
+| web `npm test` | 2/2 component tests pass |
 | web `npm run build` | PASS |
+| `docker compose up --build -d` | PASS: PostgreSQL healthy; migrate/seed exit 0; API/workers/web running |
+| PostgreSQL repository contract | PASS against the migrated Compose database |
+| PostgreSQL approval workflow | PASS: completed run, 2 citations, 2 approved actions, 1 ticket, 1 outbox record |
 | web runtime vs Go API | 200 on /, /escalations, /admin, /login, /inquiries/INQ-001 |
 | `go run ./cmd/eval` (bin/eval) | exit 0, all §11.3 gates PASS (below) |
 | `make smoke` (bin/smoke) | **SMOKE OK** — transcript at `evals/reports/smoke-transcript.txt` |
@@ -63,8 +69,9 @@ customers_orders `e69ee8cc…ceb1`.
 
 ## Acceptance criteria (§2.2), item by item
 
-1. **Compose stack** — `docker-compose.yml` + Dockerfiles provided with
-   per-role env (§18). **UNEXECUTED here (no Docker)** — see NOT verified.
+1. **Compose stack** — VERIFIED: clean image build, healthy PostgreSQL,
+   successful goose migrations and synthetic seed, and running API, web,
+   agent worker, and executor worker.
 2. **Seed** — VERIFIED: Go seed loads 30 inquiries / 20 KB articles /
    10 orders + customers / 2 tenants / demo operator+admin users,
    redacted at seed with the real redactor (test + smoke).
@@ -113,11 +120,10 @@ customers_orders `e69ee8cc…ceb1`.
 16. **README honesty** — README documents deployment state, limitations,
     demo credentials, and only the measured results above. No Node.js
     backend claim (§0.2): the backend is Go; TS is the web UI only.
-17. **Go/web CI checks (#17, NEW)** — gofmt/vet/test/test-race all run
-    locally (above) and are wired into `.github/workflows/ci.yml`. Web:
-    typecheck + build wired and run locally. GAP: the web app has no
-    eslint config or UI test suite (same as v2), so CI has no web
-    lint/UI-test step — recorded here rather than faked.
+17. **Go/web CI checks (#17)** — gofmt/vet/test/build are run locally;
+    test-race passed in the Linux build container and is wired into CI.
+    Web type-check, ESLint, Vitest component tests, production build, and a
+    zero-finding npm audit were all run locally and are wired into CI.
 18. **Generated contract types (#18, NEW)** — VERIFIED: Go server stubs +
     types from oapi-codegen, TS types from openapi-typescript, sqlc
     output — all generated from `api/openapi.yaml` / `db/queries`, all
@@ -135,29 +141,19 @@ mcp-ticket and its env carries no ModelRail key.
 
 ## Deviations from spec (and why)
 
-1. **PgStore method bodies are explicit stubs** returning an
-   "unverified" error. The PG path ships goose migrations (incl.
-   per-role grants), sqlc queries + generated `dbgen` code (generation
-   verified), the pgx pool handle, and per-role URL wiring — but with no
-   PostgreSQL on this machine, a blind 70-method port could not be
-   verified and would be a false claim. The SQLite store is the verified
-   implementation of the same contract.
-2. **ApproveRequest shape**: the canonical OpenAPI `ApproveRequest`
+1. **ApproveRequest shape**: the canonical OpenAPI `ApproveRequest`
    carries `revision` + `selected_action_ids` only, so the API binds the
    stored payload hashes (the ones shown in the draft detail) into the
    approval record. The executor/ticket server still re-validate stored
    payload ↔ stored hash ↔ approval before any write.
-3. **Japanese style length check** uses rune counts (v2 used JS UTF-16
+2. **Japanese style length check** uses rune counts (v2 used JS UTF-16
    lengths) — a deliberate, recorded porting difference; thresholds are
    generous (80–1200) and no gold case is near the boundary.
-4. **Smoke/Makefile `seed` recipe** seeds via API first-boot (the same
-   code path used everywhere) rather than a separate seed binary.
+3. **Seeding** uses a dedicated short-lived command in PostgreSQL/Compose;
+   SQLite development still seeds on API first boot for convenience.
 
 ## NOT verified
 
-- PostgreSQL execution of any kind (migrations, grants, sqlc queries,
-  PgStore) — no PostgreSQL on this machine.
-- Docker / Docker Compose (Dockerfiles + compose provided, unexecuted).
 - GitHub CI run of `.github/workflows/ci.yml` (provided, not run).
 - Live ModelRail inference (mock mode verified; live-response parsing is
   contract-tested with an injected transport).

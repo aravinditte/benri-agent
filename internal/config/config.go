@@ -18,7 +18,7 @@ type Config struct {
 	Env       string
 	MockLLM   bool
 	DemoMode  bool
-	StoreKind string // "sqlite" (locally verified) or "postgres" (Compose; unverified here)
+	StoreKind string // "sqlite" for local use or "postgres" for deployment
 	// SQLite path (local verification). PG URLs are per-role (§18).
 	DBPath string
 
@@ -28,6 +28,7 @@ type Config struct {
 	KBMCPDatabaseURL     string
 	CRMMCPDatabaseURL    string
 	TicketMCPDatabaseURL string
+	MigratorDatabaseURL  string
 
 	APIPort int
 
@@ -106,6 +107,7 @@ func Load() (*Config, error) {
 	c.KBMCPDatabaseURL = os.Getenv("BENRI_KB_MCP_DATABASE_URL")
 	c.CRMMCPDatabaseURL = os.Getenv("BENRI_CRM_MCP_DATABASE_URL")
 	c.TicketMCPDatabaseURL = os.Getenv("BENRI_TICKET_MCP_DATABASE_URL")
+	c.MigratorDatabaseURL = os.Getenv("BENRI_MIGRATOR_DATABASE_URL")
 	if c.KagomeDict != "ipa" && c.KagomeDict != "uni" {
 		return nil, fmt.Errorf("BENRI_KAGOME_DICT must be ipa or uni, got %q", c.KagomeDict)
 	}

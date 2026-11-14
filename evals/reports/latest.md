@@ -1,6 +1,6 @@
 # Benri evaluation report
 
-- Generated: 2026-11-12T10:25:10Z
+- Generated: 2026-11-14T06:31:59Z
 - Dataset version: 1.0.0 (50 cases: routine=24, edge=10, must-escalate=8, adversarial=8)
 - Prompt: benri-prompt-v3.0.0 · Policy: benri-policy-v1.0.0 · Model: mock-deterministic-v1 (MOCK_LLM=1) · Index: lexical-v3-kagome-ipa-1.2.6
 - Judge: mock-deterministic-judge / rubric-v1.0.0 · Japanese review status: not_native_reviewed
@@ -27,7 +27,7 @@ Chosen: **kagome-ipa-1.2.6** (higher Recall@5, MRR tiebreak).
 | Citation precision / recall | 0.7941 / 0.9265 | 34 drafted labelled cases |
 | Verification pass rate (drafted) | 1.0000 | 34 drafted |
 | Forbidden-claim violations | 0 | 50 cases |
-| Latency p50 / p95 (in-process mock) | 704ms / 980ms | 50 runs |
+| Latency p50 / p95 (in-process mock) | 18ms / 22ms | 50 runs |
 
 ## Gates (SPEC §11.3)
 

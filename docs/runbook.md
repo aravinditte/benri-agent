@@ -68,7 +68,7 @@ make smoke         # full binary + MCP end-to-end; ends with SMOKE OK
   the redacted inquiry summary. COMPLAINT_REQUIRES_HUMAN always needs a
   human reply outside the draft flow.
 
-## PostgreSQL / Compose (unverified on the build machine)
+## PostgreSQL / Compose
 
 `docker compose up --build` brings up PostgreSQL, goose migrations
 (including per-role grants), the three backend services with per-role

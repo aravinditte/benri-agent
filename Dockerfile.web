@@ -1,4 +1,4 @@
-# Benri web (Next.js). STATUS: provided, UNEXECUTED (no Docker here).
+# Benri web (Next.js). Verified with Docker Compose on 2026-11-14.
 FROM node:22-bookworm-slim AS build
 WORKDIR /src
 COPY web/package.json web/package-lock.json ./

@@ -20,6 +20,14 @@ BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'benri_ticket_mcp') THEN CREATE ROLE benri_ticket_mcp LOGIN; END IF;
 END $$;
 -- +goose StatementEnd
+-- These are fixture-only Compose credentials. Production deployments must
+-- provision the roles and passwords through their secret-management layer.
+ALTER ROLE benri_agent PASSWORD 'benri-dev-only';
+ALTER ROLE benri_api PASSWORD 'benri-dev-only';
+ALTER ROLE benri_executor PASSWORD 'benri-dev-only';
+ALTER ROLE benri_kb_mcp PASSWORD 'benri-dev-only';
+ALTER ROLE benri_crm_mcp PASSWORD 'benri-dev-only';
+ALTER ROLE benri_ticket_mcp PASSWORD 'benri-dev-only';
 -- agent
 GRANT SELECT, INSERT, UPDATE ON runs, run_steps, tool_calls, drafts, proposed_actions, audit_events TO benri_agent;
 GRANT SELECT ON tenants, users, inquiries, customers, orders, kb_articles, kb_chunks TO benri_agent;
@@ -28,6 +36,7 @@ REVOKE INSERT, UPDATE, DELETE ON approvals, execution_jobs, tickets, ticket_note
 -- api
 GRANT SELECT, INSERT, UPDATE ON approvals, execution_jobs, drafts, proposed_actions, inquiries, kb_articles, kb_chunks, sessions, audit_events TO benri_api;
 GRANT SELECT ON tenants, users, customers, orders, runs, run_steps, tool_calls, tickets, ticket_notes, outbox_messages, eval_runs TO benri_api;
+GRANT INSERT ON runs TO benri_api;
 REVOKE INSERT, UPDATE, DELETE ON tickets, ticket_notes, outbox_messages FROM benri_api;
 -- executor
 GRANT SELECT, UPDATE ON execution_jobs TO benri_executor;

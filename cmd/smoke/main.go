@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -74,7 +75,7 @@ func (c *client) do(method, path string, body any) (int, map[string]any) {
 }
 
 func runWorker(binDir, name string, env []string) string {
-	cmd := exec.Command(filepath.Join(binDir, name), "--once")
+	cmd := exec.Command(binaryPath(binDir, name), "--once")
 	cmd.Env = env
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -82,6 +83,13 @@ func runWorker(binDir, name string, env []string) string {
 		failures++
 	}
 	return string(out)
+}
+
+func binaryPath(binDir, name string) string {
+	if runtime.GOOS == "windows" {
+		name += ".exe"
+	}
+	return filepath.Join(binDir, name)
 }
 
 func main() {
@@ -116,13 +124,13 @@ func run() error {
 		"BENRI_ROOT_DIR="+root,
 		"MOCK_LLM=1",
 		"BENRI_USE_MCP=1",
-		"BENRI_MCP_KB_BIN="+filepath.Join(absBin, "mcp-kb"),
-		"BENRI_MCP_CRM_BIN="+filepath.Join(absBin, "mcp-crm"),
-		"BENRI_MCP_TICKET_BIN="+filepath.Join(absBin, "mcp-ticket"),
+		"BENRI_MCP_KB_BIN="+binaryPath(absBin, "mcp-kb"),
+		"BENRI_MCP_CRM_BIN="+binaryPath(absBin, "mcp-crm"),
+		"BENRI_MCP_TICKET_BIN="+binaryPath(absBin, "mcp-ticket"),
 		fmt.Sprintf("API_PORT=%d", port),
 	)
 	logf("== Benri smoke (Go binaries, SQLite, mock LLM, MCP gateways on) ==")
-	api := exec.Command(filepath.Join(absBin, "api"))
+	api := exec.Command(binaryPath(absBin, "api"))
 	api.Env = env
 	if err := api.Start(); err != nil {
 		return err

@@ -23,7 +23,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 818,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -55,7 +55,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 881,
+      "latency_ms": 21,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -88,7 +88,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 920,
+      "latency_ms": 20,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -121,7 +121,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 899,
+      "latency_ms": 20,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -156,7 +156,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 977,
+      "latency_ms": 21,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -188,7 +188,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 840,
+      "latency_ms": 19,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -223,7 +223,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 980,
+      "latency_ms": 20,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -254,7 +254,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 899,
+      "latency_ms": 22,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -287,7 +287,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 911,
+      "latency_ms": 21,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -319,7 +319,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 660,
+      "latency_ms": 27,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -350,7 +350,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 699,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -381,7 +381,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 1019,
+      "latency_ms": 23,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -412,7 +412,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 647,
+      "latency_ms": 19,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -443,7 +443,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 730,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -475,7 +475,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 623,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -504,7 +504,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 646,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -537,7 +537,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 704,
+      "latency_ms": 20,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -567,7 +567,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 887,
+      "latency_ms": 17,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -595,7 +595,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 794,
+      "latency_ms": 19,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -627,7 +627,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 588,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -658,7 +658,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 649,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -692,7 +692,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 778,
+      "latency_ms": 20,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -723,7 +723,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 702,
+      "latency_ms": 19,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -754,7 +754,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 675,
+      "latency_ms": 17,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -786,7 +786,7 @@
       ],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 662,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -819,7 +819,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 666,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -851,7 +851,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 564,
+      "latency_ms": 16,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -886,7 +886,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 845,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -920,7 +920,7 @@
       ],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 925,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -952,7 +952,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 653,
+      "latency_ms": 18,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -985,7 +985,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 936,
+      "latency_ms": 21,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1013,7 +1013,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 745,
+      "latency_ms": 17,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1045,7 +1045,7 @@
       ],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 685,
+      "latency_ms": 17,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1073,7 +1073,7 @@
       ],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 694,
+      "latency_ms": 17,
       "judge": {
         "politeness": 5,
         "clarity": 5,
@@ -1101,7 +1101,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 894,
+      "latency_ms": 21,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1129,7 +1129,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 602,
+      "latency_ms": 15,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1151,7 +1151,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 507,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1179,7 +1179,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 516,
+      "latency_ms": 12,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1207,7 +1207,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 775,
+      "latency_ms": 14,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1234,7 +1234,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 705,
+      "latency_ms": 14,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1261,7 +1261,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 672,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1289,7 +1289,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 541,
+      "latency_ms": 16,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1317,7 +1317,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 509,
+      "latency_ms": 14,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1341,7 +1341,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 544,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1367,7 +1367,7 @@
       "proposed_action_types": [],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 537,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1395,7 +1395,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 683,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1417,7 +1417,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 854,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1441,7 +1441,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 1168,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1465,7 +1465,7 @@
       "proposed_action_types": [],
       "required_facts_present": false,
       "forbidden_claims_absent": true,
-      "latency_ms": 729,
+      "latency_ms": 14,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1490,7 +1490,7 @@
       "proposed_action_types": [],
       "required_facts_present": true,
       "forbidden_claims_absent": true,
-      "latency_ms": 624,
+      "latency_ms": 13,
       "judge": {
         "politeness": 0,
         "clarity": 0,
@@ -1648,7 +1648,7 @@
       "value": 0.9625
     }
   },
-  "generated_at": "2026-11-12T10:25:10Z",
+  "generated_at": "2026-11-14T06:31:59Z",
   "grounding": {
     "drafted_cases": 34,
     "forbidden_claim_violations": 0,
@@ -1663,8 +1663,8 @@
     "politeness": 3.4
   },
   "operational": {
-    "latency_p50_ms": 704,
-    "latency_p95_ms": 980
+    "latency_p50_ms": 18,
+    "latency_p95_ms": 22
   },
   "retrieval": {
     "labelled_cases": 40,

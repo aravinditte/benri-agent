@@ -1,7 +1,6 @@
 # Benri Agent — Compose stack (SPEC §13/§15.1/§18).
-# STATUS: provided, UNEXECUTED on the build machine (no Docker available).
-# The locally verified path is the SQLite store (see README). This stack
-# runs the PostgreSQL path with per-role database users (§9/§18).
+# Verified on 2026-11-14. This stack runs PostgreSQL with per-role database
+# users, a dedicated migration step, and a dedicated synthetic seed step.
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -12,16 +11,33 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U benri -d benri"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
 
   migrate:
-    image: pressly/goose:v3.30.0
+    image: ghcr.io/pressly/goose:v3.30.0
     volumes:
       - ./db/migrations:/migrations
     environment:
       GOOSE_DRIVER: postgres
       GOOSE_DBSTRING: postgres://benri:benri-dev-only@postgres:5432/benri?sslmode=disable
     command: -dir /migrations up
-    depends_on: [postgres]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  seed:
+    build: { context: ., dockerfile: Dockerfile.backend, target: seed }
+    environment:
+      BENRI_STORE: postgres
+      BENRI_MIGRATOR_DATABASE_URL: postgres://benri:benri-dev-only@postgres:5432/benri?sslmode=disable
+      BENRI_ROOT_DIR: /
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
   api:
     build: { context: ., dockerfile: Dockerfile.backend, target: api }
@@ -32,17 +48,23 @@ services:
       MOCK_LLM: "1"
       BENRI_ROOT_DIR: /
     ports: ["8080:8080"]
-    depends_on: [migrate]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
 
   agent-worker:
     build: { context: ., dockerfile: Dockerfile.backend, target: agent-worker }
     environment:
       BENRI_STORE: postgres
       BENRI_AGENT_DATABASE_URL: postgres://benri_agent:benri-dev-only@postgres:5432/benri?sslmode=disable
+      BENRI_KB_MCP_DATABASE_URL: postgres://benri_kb_mcp:benri-dev-only@postgres:5432/benri?sslmode=disable
+      BENRI_CRM_MCP_DATABASE_URL: postgres://benri_crm_mcp:benri-dev-only@postgres:5432/benri?sslmode=disable
       BENRI_USE_MCP: "1"
       MOCK_LLM: "1"
       # No ticket binary in this image, no ModelRail key needed in mock mode.
-    depends_on: [migrate]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
 
   executor-worker:
     build: { context: ., dockerfile: Dockerfile.backend, target: executor-worker }
@@ -52,7 +74,9 @@ services:
       BENRI_TICKET_MCP_DATABASE_URL: postgres://benri_ticket_mcp:benri-dev-only@postgres:5432/benri?sslmode=disable
       BENRI_USE_MCP: "1"
       # No ModelRail key: the executor never calls the model gateway.
-    depends_on: [migrate]
+    depends_on:
+      seed:
+        condition: service_completed_successfully
 
   web:
     build: { context: ., dockerfile: Dockerfile.web }

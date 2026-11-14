@@ -1,7 +1,7 @@
 // Package store defines Benri's repository contracts and two implementations:
-//   - SQLiteStore (pure-Go modernc driver): the LOCALLY VERIFIED path.
-//   - PGStore (pgx/v5 + sqlc-generated queries): ships for Compose
-//     deployments and is UNVERIFIED on this machine (no PostgreSQL).
+//   - SQLiteStore (pure-Go modernc driver): lightweight local/test path.
+//   - PgStore (pgx/v5 stdlib driver): PostgreSQL/Compose path, verified by
+//     the opt-in PostgreSQL repository contract test and Compose smoke flow.
 //
 // Capability model (SPEC §3.3/§6/§9) — a handle carries a Role and write
 // methods check it before touching fixture/approval tables:

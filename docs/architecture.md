@@ -41,13 +41,12 @@ Ticket-action state is owned by the ticket server; the executor owns only
 
 ## Data path
 
-- **SQLite** (`modernc.org/sqlite`, pure Go) is the locally verified store.
-- **PostgreSQL** path: goose migrations (`db/migrations/`, incl. per-role
-  grants in `00002_role_grants.sql`), sqlc queries (`db/queries/` →
-  `internal/store/dbgen`, generated + committed), pgx/v5 pool handle in
-  `internal/store/pg.go`. **Status: provided, UNVERIFIED** — no PostgreSQL
-  on the build machine; the PgStore method bodies return an explicit
-  unverified error instead of pretending to work.
+- **SQLite** (`modernc.org/sqlite`, pure Go) is the lightweight local store.
+- **PostgreSQL** uses goose migrations, per-role grants, and pgx/v5 through
+  `database/sql`. A small dialect adapter shares the capability-checked
+  repository logic with SQLite. Compose and the PostgreSQL contract test
+  exercise migrations, seeding, leasing, approvals, fixture actions, audit,
+  and evaluation persistence.
 
 ## Retrieval (§8)
 

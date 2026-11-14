@@ -13,8 +13,8 @@ agent-worker: agent-worker: processed 1 run(s)
   ok: invoice draft proposes 2 actions (reply + ticket)
   ok: approval accepted
   ok: 2 execution jobs created
-executor-worker: executor: job job_286e228cb3d9 -> succeeded 
-executor: job job_a3a7a27f24cd -> succeeded 
+executor-worker: executor: job job_b8e4ac617577 -> succeeded 
+executor: job job_332d2cef6a20 -> succeeded 
 executor-worker: processed 2 job(s)
   ok: exactly 1 ticket created (via ticket MCP server)
   ok: exactly 1 outbox message (demo reply)

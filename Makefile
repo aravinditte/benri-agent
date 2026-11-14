@@ -25,10 +25,9 @@ down:
 migrate:
 	goose -dir db/migrations postgres "$(BENRI_MIGRATE_DATABASE_URL)" up
 
-## seed: seed the local SQLite database from fixtures (idempotent)
+## seed: seed the configured database from synthetic fixtures (idempotent)
 seed: build
-	BENRI_DB_PATH=$${BENRI_DB_PATH:-./data/benri.sqlite} ./bin/api & sleep 2; kill %1 2>/dev/null; true
-	@echo "seeded via api first-boot (see README for the standalone flow)"
+	BENRI_DB_PATH=$${BENRI_DB_PATH:-./data/benri.sqlite} ./bin/seed
 
 ## generate: regenerate OpenAPI (Go + TS) and sqlc outputs from canonical sources
 generate:
@@ -51,6 +50,7 @@ generate-check:
 
 test:
 	$(GO) test ./...
+	cd web && npm run typecheck && npm test
 
 test-race:
 	$(GO) test -race ./...
@@ -58,6 +58,7 @@ test-race:
 lint:
 	@test -z "$$($(GO) fmt -l . 2>/dev/null || gofmt -l cmd internal)" || { gofmt -l cmd internal; echo "gofmt drift"; exit 1; }
 	$(GO) vet ./...
+	cd web && npm run lint
 
 eval: build
 	BENRI_ROOT_DIR=. BENRI_DB_PATH=$${BENRI_DB_PATH:-./data/benri.sqlite} ./bin/eval

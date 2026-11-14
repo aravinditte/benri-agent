@@ -1,6 +1,6 @@
 -- Benri Agent initial schema (PostgreSQL path, SPEC §6/§9).
 -- Mirrors the locally verified SQLite DDL. Per-role grants are in
--- 00002_role_grants.sql. STATUS: provided, UNVERIFIED (no PostgreSQL here).
+-- 00002_role_grants.sql. Verified with PostgreSQL 16 through Docker Compose.
 -- +goose Up
 CREATE TABLE tenants (id TEXT PRIMARY KEY, name TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active');
 CREATE TABLE users (id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL REFERENCES tenants(id), email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active');

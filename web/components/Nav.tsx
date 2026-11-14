@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { clearSession, getStoredUser, type User } from "@/lib/api";
 import { useLang } from "@/lib/i18n";
 

@@ -38,8 +38,11 @@ func run() error {
 	defer st.Close()
 	tk := proc.Tokenizer(cfg)
 	if !seed.Seeded(st) {
+		if cfg.StoreKind == "postgres" {
+			return fmt.Errorf("postgres database is not seeded; run the dedicated seed command before the API")
+		}
 		// Seeding needs fixture-write access beyond the api role; use a
-		// short-lived full handle on the same database for first boot only.
+		// short-lived full handle on the same SQLite database for first boot.
 		full, err := proc.OpenStore(cfg, store.RoleFull)
 		if err != nil {
 			return err

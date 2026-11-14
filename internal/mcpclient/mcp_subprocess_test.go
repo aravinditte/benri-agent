@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/aravinditte/benri-agent/internal/mcpclient"
@@ -21,8 +22,12 @@ func TestMCPSubprocessStdio(t *testing.T) {
 	}
 	root := testutil.RootDir()
 	binDir := t.TempDir()
+	exe := ""
+	if runtime.GOOS == "windows" {
+		exe = ".exe"
+	}
 	for _, name := range []string{"mcp-kb", "mcp-crm", "mcp-ticket"} {
-		cmd := exec.Command("go", "build", "-o", filepath.Join(binDir, name), "./cmd/"+name)
+		cmd := exec.Command("go", "build", "-o", filepath.Join(binDir, name+exe), "./cmd/"+name)
 		cmd.Dir = root
 		if out, err := cmd.CombinedOutput(); err != nil {
 			t.Fatalf("build %s: %v\n%s", name, err, out)
@@ -32,7 +37,7 @@ func TestMCPSubprocessStdio(t *testing.T) {
 	t.Setenv("BENRI_DB_PATH", path)
 	t.Setenv("BENRI_STORE", "sqlite")
 	ctx := context.Background()
-	gw, err := mcpclient.SpawnReadGateway(ctx, filepath.Join(binDir, "mcp-kb"), filepath.Join(binDir, "mcp-crm"), "tenant-hinata")
+	gw, err := mcpclient.SpawnReadGateway(ctx, filepath.Join(binDir, "mcp-kb"+exe), filepath.Join(binDir, "mcp-crm"+exe), "tenant-hinata")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +57,7 @@ func TestMCPSubprocessStdio(t *testing.T) {
 		t.Errorf("subprocess lookup_order: %+v", order)
 	}
 	// Ticket gateway subprocess: unapproved action id must be refused.
-	tg, err := mcpclient.SpawnTicketGateway(ctx, filepath.Join(binDir, "mcp-ticket"))
+	tg, err := mcpclient.SpawnTicketGateway(ctx, filepath.Join(binDir, "mcp-ticket"+exe))
 	if err != nil {
 		t.Fatal(err)
 	}

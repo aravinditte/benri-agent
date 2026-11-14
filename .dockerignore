@@ -1,0 +1,8 @@
+.git
+.cache
+bin
+data
+web/.next
+web/node_modules
+web/tsconfig.tsbuildinfo
+*.sqlite

@@ -15,8 +15,8 @@ import (
 )
 
 // OpenStore opens the configured store with the given capability role.
-// The SQLite path is the locally verified one; the PostgreSQL path returns
-// the UNVERIFIED pg implementation handle.
+// Both SQLite and PostgreSQL implementations are exercised by tests; the
+// PostgreSQL contract test runs when BENRI_TEST_POSTGRES_URL is configured.
 func OpenStore(cfg *config.Config, role store.Role) (store.Repository, error) {
 	switch cfg.StoreKind {
 	case "sqlite":
@@ -48,6 +48,8 @@ func roleURL(cfg *config.Config, role store.Role) string {
 		return cfg.CRMMCPDatabaseURL
 	case store.RoleTicketMCP:
 		return cfg.TicketMCPDatabaseURL
+	case store.RoleFull:
+		return cfg.MigratorDatabaseURL
 	}
 	return ""
 }

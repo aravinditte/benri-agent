@@ -42,9 +42,9 @@ Kagome dictionary benchmark (§8.2): IPA Recall@5 0.9375 / MRR 0.8958 vs
 UniDic 0.9375 / 0.8917 (40 labelled) → **IPAdic chosen**,
 index version `lexical-v3-kagome-ipa-1.2.6`.
 
-Go tests: 35/35 pass (`go test ./...`), race detector clean
-(`go test -race ./...`). Live smoke with MCP subprocess gateways:
-**SMOKE OK** (`evals/reports/smoke-transcript.txt`).
+Go tests: 41 test functions pass (`go test ./...`); the race suite passes in
+the Linux build container (`go test -race ./...`). Live smoke with MCP
+subprocess gateways: **SMOKE OK** (`evals/reports/smoke-transcript.txt`).
 
 These are deterministic **mock-LLM** numbers — they measure the mock
 pipeline against the gold set, not a live model. Japanese fixtures are
@@ -118,15 +118,14 @@ fixtures/ evals/            synthetic demo data + versioned gold dataset
 docs/                       architecture, threat model, eval methodology, runbook
 ```
 
-## PostgreSQL / Docker (provided, unverified here)
+## PostgreSQL / Docker
 
-`docker-compose.yml` + `Dockerfile.backend` / `Dockerfile.web` run the
-PostgreSQL path with per-role database users; goose migrations and sqlc
-queries are in `db/`. The agent-worker image ships no ticket binary; the
-executor image ships no ModelRail key. **No Docker or PostgreSQL exists
-on the build machine, so this path is provided but unverified** — the
-locally verified store is SQLite (pure-Go driver). Details and the full
-item-by-item status: `VERIFICATION-REPORT.md`.
+`docker compose up --build -d` runs PostgreSQL, a dedicated goose migration
+job, a dedicated synthetic seed job, the API, both workers, and the web UI.
+The stack was verified on 2026-11-14, including a PostgreSQL repository
+contract test and an approval-to-ticket/outbox workflow. The agent image ships
+no ticket binary; the executor image receives no ModelRail key. Details and
+the full item-by-item status are in `VERIFICATION-REPORT.md`.
 
 ## Docs
 

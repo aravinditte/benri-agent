@@ -1,0 +1,83 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: benri
+          POSTGRES_PASSWORD: benri-dev-only
+          POSTGRES_DB: benri
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U benri -d benri"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 30
+    env:
+      BENRI_TEST_POSTGRES_URL: postgres://benri:benri-dev-only@localhost:5432/benri?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: 1.27.4
+          cache: true
+      - name: Install migration tool
+        run: go install github.com/pressly/goose/v3/cmd/goose@v3.30.0
+      - name: Install code generators
+        run: |
+          go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.8.2
+          go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.31.1
+      - name: Apply PostgreSQL migrations
+        run: goose -dir db/migrations postgres "$BENRI_TEST_POSTGRES_URL" up
+      - name: Check formatting
+        run: test -z "$(gofmt -l cmd internal)"
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./... -count=1
+      - name: Race detector
+        run: go test -race ./... -count=1
+      - name: Build commands
+        run: go build ./cmd/...
+      - name: Check generated Go and SQL code
+        run: |
+          oapi-codegen -generate types,chi-server -package gen -o internal/api/gen/api.gen.go api/openapi.yaml
+          sqlc generate -f db/sqlc.yaml
+          git diff --exit-code -- internal/api/gen internal/store/dbgen
+      - name: Mock evaluation gates
+        run: go run ./cmd/eval
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npm run typecheck
+        working-directory: web
+      - name: Check generated TypeScript API types
+        run: npm run generate:api && git diff --exit-code -- lib/api/schema.d.ts
+        working-directory: web
+      - run: npm run lint
+        working-directory: web
+      - run: npm test
+        working-directory: web
+      - run: npm run build
+        working-directory: web

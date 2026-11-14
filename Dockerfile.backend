@@ -1,5 +1,5 @@
 # Benri backend — one multi-stage build, per-process runtime stages.
-# STATUS: provided, UNEXECUTED on the build machine (no Docker available).
+# Verified with Docker Compose on 2026-11-14.
 # Least-privilege packaging (SPEC §13/§18):
 #   - agent-worker image ships mcp-kb + mcp-crm ONLY (no mcp-ticket binary,
 #     and its Compose env carries no ticket route).
@@ -18,6 +18,12 @@ COPY fixtures /fixtures
 ENV BENRI_ROOT_DIR=/ BENRI_DB_PATH=/data/benri.sqlite
 EXPOSE 8080
 ENTRYPOINT ["/usr/local/bin/api"]
+
+FROM gcr.io/distroless/static-debian12:nonroot AS seed
+COPY --from=build /out/seed /usr/local/bin/seed
+COPY fixtures /fixtures
+ENV BENRI_ROOT_DIR=/
+ENTRYPOINT ["/usr/local/bin/seed"]
 
 FROM gcr.io/distroless/static-debian12:nonroot AS agent-worker
 COPY --from=build /out/agent-worker /usr/local/bin/agent-worker
